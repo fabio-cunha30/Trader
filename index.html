@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TradeMax">
+<meta name="theme-color" content="#060a0f">
+<title>TradeMax Academy — Day Trade B3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg:#060a0f; --bg2:#0a0f16; --bg3:#0e1520;
+  --card:#111b27; --card2:#152030;
+  --border:#1a2535; --border2:#243040; --border3:#2d3f55;
+  --g:#00c896; --g-dim:rgba(0,200,150,0.12); --g-glow:rgba(0,200,150,0.25);
+  --b:#0a84ff; --b-dim:rgba(10,132,255,0.12);
+  --o:#ff9f0a; --o-dim:rgba(255,159,10,0.12);
+  --r:#ff453a; --r-dim:rgba(255,69,58,0.12);
+  --p:#bf5af2; --p-dim:rgba(191,90,242,0.12);
+  --text:#dce8f5; --text2:#7a95b0; --text3:#3d5268;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Space Grotesk',sans-serif;
+  --display:'Bebas Neue',sans-serif;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);display:flex;flex-direction:column}
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+/* TOPBAR */
+.topbar{flex-shrink:0;height:calc(52px + var(--safe-top));padding-top:var(--safe-top);padding-left:16px;padding-right:16px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;z-index:50}
+.logo-wrap{display:flex;align-items:center;gap:9px}
+.logo-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--g),#00a876);border-radius:8px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 14px var(--g-glow)}
+.logo-icon svg{width:16px;height:16px;stroke:#fff;stroke-width:2.5;fill:none;stroke-linecap:round}
+.logo-txt{font-family:var(--display);font-size:20px;letter-spacing:1px;line-height:1}
+.logo-txt span{color:var(--g)}
+.logo-sub{font-family:var(--mono);font-size:8px;color:var(--text3);letter-spacing:2px;text-transform:uppercase}
+.ticker{display:flex;gap:12px}
+.tick{display:flex;flex-direction:column;align-items:flex-end}
+.tick-s{font-family:var(--mono);font-size:8px;color:var(--text3);text-transform:uppercase}
+.tick-v{font-family:var(--mono);font-size:11px;font-weight:500}
+.tick-c{font-family:var(--mono);font-size:9px}
+.tick-c.up{color:var(--g)}.tick-c.dn{color:var(--r)}
+
+/* MAIN & PAGES */
+.main{flex:1;overflow:hidden;position:relative}
+.page{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;padding-bottom:calc(64px + var(--safe-bot));display:none}
+.page.active{display:block}
+
+/* BOTTOM NAV */
+.bottom-nav{flex-shrink:0;height:calc(60px + var(--safe-bot));padding-bottom:var(--safe-bot);background:var(--bg2);border-top:1px solid var(--border);display:flex;z-index:50}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;cursor:pointer;color:var(--text3);font-size:9px;font-family:var(--sans);font-weight:500;text-transform:uppercase;letter-spacing:.5px;transition:color .2s;position:relative}
+.nav-item svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.8}
+.nav-item.active{color:var(--g)}
+.nav-item.active::after{content:'';position:absolute;bottom:0;left:25%;right:25%;height:2px;background:var(--g);border-radius:2px 2px 0 0}
+
+/* CARDS & COMPONENTS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;font-family:var(--mono)}
+.tag-g{background:var(--g-dim);color:var(--g);border:1px solid rgba(0,200,150,.2)}
+.tag-b{background:var(--b-dim);color:var(--b);border:1px solid rgba(10,132,255,.2)}
+.tag-o{background:var(--o-dim);color:var(--o);border:1px solid rgba(255,159,10,.2)}
+.tag-r{background:var(--r-dim);color:var(--r);border:1px solid rgba(255,69,58,.2)}
+.tag-p{background:var(--p-dim);color:var(--p);border:1px solid rgba(191,90,242,.2)}
+.pill-up{background:var(--g-dim);color:var(--g);padding:2px 7px;border-radius:20px;font-family:var(--mono);font-size:10px;display:inline-block}
+.pill-dn{background:var(--r-dim);color:var(--r);padding:2px 7px;border-radius:20px;font-family:var(--mono);font-size:10px;display:inline-block}
+.prog-track{height:3px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:6px}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--g),#00e5b0);border-radius:2px}
+.sec-head{display:flex;align-items:center;justify-content:space-between;padding:18px 16px 10px}
+.sec-title{font-family:var(--mono);font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:2px}
+.sec-link{font-family:var(--mono);font-size:10px;color:var(--g);background:none;border:none;cursor:pointer}
+.pulse-dot{width:6px;height:6px;background:var(--g);border-radius:50%;animation:pulse 1.8s infinite;display:inline-block}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* HOME HERO */
+.hero{margin:12px 16px;background:linear-gradient(135deg,#0c1922,#071420,#0a1e2e);border:1px solid var(--border2);border-radius:16px;padding:20px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-50px;right:-50px;width:180px;height:180px;background:radial-gradient(circle,rgba(0,200,150,.13) 0%,transparent 70%);pointer-events:none}
+.mentor-badge{display:inline-flex;align-items:center;gap:6px;background:var(--g-dim);border:1px solid rgba(0,200,150,.25);border-radius:20px;padding:4px 12px;font-family:var(--mono);font-size:9px;color:var(--g);margin-bottom:13px;letter-spacing:1px}
+.hero-title{font-family:var(--display);font-size:30px;line-height:1;letter-spacing:1px;margin-bottom:8px}
+.hero-title em{color:var(--g);font-style:normal}
+.hero-desc{font-size:13px;color:var(--text2);line-height:1.55;margin-bottom:16px}
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.hs{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center}
+.hs-val{font-family:var(--display);font-size:24px;color:var(--g);line-height:1}
+.hs-lbl{font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+
+/* MARKET GRID */
+.mkt-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:0 16px 8px}
+.mkt-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px}
+.mkt-sym{font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:3px;text-transform:uppercase}
+.mkt-val{font-family:var(--mono);font-size:15px;font-weight:600;margin-bottom:4px}
+
+/* MODULE CARDS (home) */
+.mod-card{margin:0 16px 8px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:15px;display:flex;gap:13px;cursor:pointer;transition:all .15s}
+.mod-card:active{border-color:var(--border3);background:var(--card2);transform:scale(.99)}
+.mod-icon{width:46px;height:46px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0}
+.mod-body{flex:1;min-width:0}
+.mod-title{font-size:13px;font-weight:600;margin-bottom:3px}
+.mod-desc{font-size:11px;color:var(--text2);line-height:1.4;margin-bottom:7px}
+.mod-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.mod-pct{font-family:var(--mono);font-size:10px;color:var(--g)}
+.mod-lessons{font-family:var(--mono);font-size:10px;color:var(--text3)}
+
+/* ==============================
+   CHART PAGE — FIXED
+   ============================== */
+.chart-page{padding:12px 16px calc(68px + var(--safe-bot))}
+.asset-grp-label{font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:2px;padding:10px 0 6px;border-top:1px solid var(--border);margin-top:4px}
+.asset-grp-label:first-of-type{border-top:none;margin-top:0;padding-top:0}
+.asset-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:4px;scrollbar-width:none}
+.asset-tabs::-webkit-scrollbar{display:none}
+.atab{flex-shrink:0;background:var(--card);border:1px solid var(--border);color:var(--text2);padding:6px 12px;border-radius:8px;font-family:var(--mono);font-size:11px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.atab.active{background:var(--g-dim);border-color:rgba(0,200,150,.35);color:var(--g)}
+
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin:10px 0 12px}
+.chart-hdr{padding:13px 15px 11px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between}
+.ch-sym{font-family:var(--display);font-size:22px;letter-spacing:1px;line-height:1}
+.ch-name{font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:2px}
+.ch-price{font-family:var(--mono);font-size:19px;font-weight:600;text-align:right}
+.ch-chg{font-family:var(--mono);font-size:11px;text-align:right;margin-top:2px}
+.ch-chg.up{color:var(--g)}.ch-chg.dn{color:var(--r)}
+
+/* TradingView Widget wrapper */
+.tv-frame-wrap{width:100%;background:var(--bg3);position:relative;border-radius:0;}
+#tv-widget-container{width:100%;height:450px;position:relative;}
+.tv-loading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:var(--bg3);font-family:var(--mono);font-size:12px;color:var(--text3);z-index:5;text-align:center;padding:20px;pointer-events:none;}
+.tv-loading-spinner{width:32px;height:32px;border:2px solid var(--border2);border-top-color:var(--g);border-radius:50%;animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.tf-row{display:flex;gap:5px;padding:10px 12px;border-top:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
+.tf-row::-webkit-scrollbar{display:none}
+.tf-btn{flex-shrink:0;background:none;border:1px solid var(--border);color:var(--text3);padding:4px 10px;border-radius:6px;font-family:var(--mono);font-size:11px;cursor:pointer;transition:all .15s}
+.tf-btn.active{background:var(--g-dim);border-color:rgba(0,200,150,.3);color:var(--g)}
+
+.analysis-blk{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:10px}
+.ablk-head{padding:11px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.ablk-icon{font-size:13px}
+.ablk-title{font-family:var(--mono);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px}
+.ablk-title.g{color:var(--g)}.ablk-title.b{color:var(--b)}.ablk-title.o{color:var(--o)}
+.ablk-body{padding:12px 14px;font-size:13px;color:var(--text2);line-height:1.6}
+.ablk-body strong{color:var(--text)}
+
+.ind-table{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:10px}
+.ind-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border)}
+.ind-row:last-child{border-bottom:none}
+.ind-name{font-size:12px;color:var(--text2)}
+.ind-val{font-family:var(--mono);font-size:12px;font-weight:500}
+.signal{font-family:var(--mono);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;padding:3px 8px;border-radius:4px}
+.signal.c{background:var(--g-dim);color:var(--g)}
+.signal.v{background:var(--r-dim);color:var(--r)}
+.signal.n{background:rgba(122,149,176,.1);color:var(--text3)}
+
+.trade-ex{background:var(--bg3);border:1px solid var(--border2);border-radius:12px;overflow:hidden;margin-bottom:10px}
+.te-head{padding:9px 14px;background:var(--card);border-bottom:1px solid var(--border);font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3)}
+.te-row{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-bottom:1px solid var(--border)}
+.te-row:last-child{border-bottom:none}
+.te-label{font-size:12px;color:var(--text3)}
+.te-val{font-family:var(--mono);font-size:12px;font-weight:500}
+.te-val.g{color:var(--g)}.te-val.r{color:var(--r)}
+
+/* ==============================
+   CURSO PAGE — LESSON LIST FIXED
+   ============================== */
+.curso-page{padding:12px 16px calc(68px + var(--safe-bot))}
+.prog-banner{background:linear-gradient(135deg,#071420,#0c1f30);border:1px solid var(--border2);border-radius:16px;padding:18px;margin-bottom:16px}
+.pb-title{font-family:var(--display);font-size:22px;letter-spacing:1px;margin-bottom:4px}
+.pb-sub{font-size:12px;color:var(--text2);margin-bottom:14px}
+.pb-stats{display:flex;gap:20px;margin-bottom:12px}
+.pbs-v{font-family:var(--mono);font-size:18px;color:var(--g);font-weight:600}
+.pbs-l{font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px}
+
+/* MODULE ROW — clickable to expand lessons */
+.mod-row{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;overflow:hidden;cursor:pointer;transition:border-color .15s}
+.mod-row:active{border-color:var(--border3)}
+.mod-row-head{display:flex;gap:12px;padding:14px;align-items:flex-start}
+.mod-num{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:13px;font-weight:600;flex-shrink:0}
+.num-done{background:var(--g-dim);color:var(--g);border:1px solid rgba(0,200,150,.2)}
+.num-prog{background:var(--o-dim);color:var(--o);border:1px solid rgba(255,159,10,.2)}
+.num-lock{background:var(--border);color:var(--text3);border:1px solid var(--border2)}
+.mod-row-body{flex:1;min-width:0}
+.mod-row-title{font-size:13px;font-weight:600;margin-bottom:3px}
+.mod-row-desc{font-size:11px;color:var(--text3);margin-bottom:7px;line-height:1.4}
+.mod-row-tags{display:flex;gap:5px;flex-wrap:wrap}
+.mod-row-arrow{color:var(--text3);font-size:16px;align-self:center;flex-shrink:0;transition:transform .3s}
+.mod-row.open .mod-row-arrow{transform:rotate(90deg);color:var(--g)}
+
+/* LESSON LIST inside module */
+.lesson-list{display:none;border-top:1px solid var(--border)}
+.mod-row.open .lesson-list{display:block}
+.lesson-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
+.lesson-item:last-child{border-bottom:none}
+.lesson-item:active{background:var(--card2)}
+.lesson-num{width:28px;height:28px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;color:var(--text3);flex-shrink:0}
+.lesson-num.done{background:var(--g-dim);border-color:rgba(0,200,150,.3);color:var(--g)}
+.lesson-content{flex:1;min-width:0}
+.lesson-title{font-size:13px;font-weight:500;margin-bottom:2px}
+.lesson-dur{font-family:var(--mono);font-size:10px;color:var(--text3)}
+.lesson-play{color:var(--text3);font-size:14px;flex-shrink:0}
+.lesson-item:hover .lesson-play,.lesson-item:active .lesson-play{color:var(--g)}
+
+/* ==============================
+   MENTOR CHAT
+   ============================== */
+.chat-page{display:flex;flex-direction:column;height:100%;overflow:hidden}
+.chat-top-bar{flex-shrink:0;display:flex;align-items:center;gap:12px;padding:13px 16px;background:var(--bg2);border-bottom:1px solid var(--border)}
+.mentor-av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--g),#00a876);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;box-shadow:0 0 14px var(--g-glow)}
+.mentor-nm{font-size:14px;font-weight:600}
+.mentor-st{font-family:var(--mono);font-size:10px;color:var(--g);display:flex;align-items:center;gap:5px}
+.chat-msgs{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:13px}
+.msg{max-width:88%;animation:fadeUp .25s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.msg.bot{align-self:flex-start}.msg.user{align-self:flex-end}
+.msg-sender{font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:4px;letter-spacing:1px;text-transform:uppercase}
+.bubble{padding:12px 15px;border-radius:16px;font-size:13.5px;line-height:1.6}
+.bot .bubble{background:var(--card);border:1px solid var(--border);border-bottom-left-radius:4px}
+.user .bubble{background:linear-gradient(135deg,#00a876,var(--g));border-bottom-right-radius:4px;color:#030f0a;font-weight:500}
+.bubble b{font-weight:700}
+.bubble .hl{background:rgba(0,200,150,.1);border-left:2px solid var(--g);padding:6px 10px;margin:8px 0;border-radius:0 6px 6px 0;font-size:12.5px}
+.bubble .warn-hl{background:rgba(255,159,10,.08);border-left:2px solid var(--o);padding:6px 10px;margin:8px 0;border-radius:0 6px 6px 0;font-size:12.5px}
+.tci{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;overflow:hidden;margin:8px 0;font-size:12px}
+.tci-row{display:flex;justify-content:space-between;padding:7px 12px;border-bottom:1px solid var(--border)}
+.tci-row:last-child{border-bottom:none}
+.tci-l{color:var(--text3)}.tci-v{font-family:var(--mono);font-weight:500}
+.tci-v.g{color:var(--g)}.tci-v.r{color:var(--r)}
+.typing{display:flex;gap:4px;padding:12px 15px;background:var(--card);border:1px solid var(--border);border-radius:16px;border-bottom-left-radius:4px;width:fit-content}
+.td{width:6px;height:6px;background:var(--text3);border-radius:50%;animation:typing 1.2s infinite}
+.td:nth-child(2){animation-delay:.2s}.td:nth-child(3){animation-delay:.4s}
+@keyframes typing{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+.chips{flex-shrink:0;display:flex;gap:6px;padding:10px 16px;overflow-x:auto;border-top:1px solid var(--border);scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;background:var(--card);border:1px solid var(--border);color:var(--text2);padding:7px 14px;border-radius:20px;font-size:12px;cursor:pointer;white-space:nowrap;transition:all .15s}
+.chip:active{border-color:var(--g);color:var(--g);background:var(--g-dim)}
+.chat-inp-bar{flex-shrink:0;display:flex;gap:10px;padding:12px 16px;background:var(--bg2);border-top:1px solid var(--border)}
+.chat-inp{flex:1;background:var(--card);border:1px solid var(--border);color:var(--text);font-family:var(--sans);font-size:14px;padding:10px 16px;border-radius:24px;outline:none;transition:border-color .2s}
+.chat-inp:focus{border-color:var(--border3)}
+.chat-inp::placeholder{color:var(--text3)}
+.send-btn{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--g),#00a876);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 12px var(--g-glow);transition:transform .15s}
+.send-btn:active{transform:scale(.9)}
+.send-btn svg{width:17px;height:17px;stroke:#030f0a;fill:none;stroke-width:2.5}
+
+/* ==============================
+   PLATAFORMAS
+   ============================== */
+.plat-page{padding:12px 16px calc(68px + var(--safe-bot))}
+.plat-hero{background:linear-gradient(135deg,#071420,#0a1c30);border:1px solid var(--border2);border-radius:16px;padding:18px;margin-bottom:14px}
+.plat-logo{font-family:var(--display);font-size:26px;letter-spacing:2px;margin-bottom:4px}
+.plat-sub{font-size:12px;color:var(--text2);margin-bottom:14px}
+.step-item{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)}
+.step-item:last-child{border-bottom:none}
+.step-circ{width:26px;height:26px;border-radius:50%;background:var(--b-dim);border:1px solid rgba(10,132,255,.3);color:var(--b);font-family:var(--mono);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-t{font-size:13px;font-weight:600;margin-bottom:2px}
+.step-d{font-size:11px;color:var(--text2);line-height:1.4}
+.hk-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:8px}
+.hk{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px 11px;display:flex;align-items:center;gap:9px}
+.hk-key{background:var(--border2);border-radius:5px;padding:3px 8px;font-family:var(--mono);font-size:11px;font-weight:600;border:1px solid var(--border3);box-shadow:0 2px 0 var(--border3);white-space:nowrap}
+.hk-d{font-size:11px;color:var(--text2)}
+
+/* ==============================
+   MODAL — LESSON VIEWER
+   ============================== */
+.modal-back{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;backdrop-filter:blur(4px)}
+.modal-back.open{display:block}
+.modal-sheet{position:absolute;bottom:0;left:0;right:0;max-height:94vh;background:var(--bg2);border-radius:24px 24px 0 0;border:1px solid var(--border2);border-bottom:none;overflow:hidden;display:flex;flex-direction:column;animation:slideUp .3s cubic-bezier(.32,1,.23,1)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:10px auto 0;flex-shrink:0}
+.modal-hdr{flex-shrink:0;padding:14px 18px 12px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.modal-title{font-family:var(--display);font-size:20px;letter-spacing:.5px;line-height:1.1;flex:1}
+.modal-close{width:28px;height:28px;border-radius:50%;background:var(--card);border:1px solid var(--border);color:var(--text2);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.modal-meta{padding:0 18px 10px;font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:1px;display:flex;gap:12px;flex-wrap:wrap;flex-shrink:0}
+.modal-meta span{background:var(--border);padding:2px 8px;border-radius:4px}
+.modal-body{flex:1;overflow-y:auto;padding:6px 18px 40px;font-size:13.5px;line-height:1.7;color:var(--text2)}
+.modal-body h3{font-family:var(--display);font-size:18px;letter-spacing:.5px;color:var(--text);margin:20px 0 8px}
+.modal-body h3:first-child{margin-top:4px}
+.modal-body p{margin-bottom:12px}
+.modal-body strong{color:var(--text);font-weight:600}
+.modal-body ul{padding-left:20px;margin-bottom:12px}
+.modal-body ul li{margin-bottom:6px}
+.modal-body .hl{background:var(--g-dim);border:1px solid rgba(0,200,150,.2);border-left:3px solid var(--g);border-radius:0 8px 8px 0;padding:11px 14px;margin:12px 0;font-size:13px}
+.modal-body .warn{background:var(--r-dim);border:1px solid rgba(255,69,58,.2);border-left:3px solid var(--r);border-radius:0 8px 8px 0;padding:11px 14px;margin:12px 0;font-size:13px}
+.modal-body .info{background:var(--b-dim);border:1px solid rgba(10,132,255,.2);border-left:3px solid var(--b);border-radius:0 8px 8px 0;padding:11px 14px;margin:12px 0;font-size:13px}
+.modal-body .tip{background:var(--o-dim);border:1px solid rgba(255,159,10,.2);border-left:3px solid var(--o);border-radius:0 8px 8px 0;padding:11px 14px;margin:12px 0;font-size:13px}
+.ex-table{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;overflow:hidden;margin:12px 0;font-size:13px}
+.ex-head{padding:8px 14px;background:var(--border);font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3)}
+.ex-row{display:flex;justify-content:space-between;padding:8px 14px;border-top:1px solid var(--border)}
+.ex-l{color:var(--text3)}.ex-v{font-family:var(--mono);font-weight:500}
+.ex-v.g{color:var(--g)}.ex-v.r{color:var(--r)}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo-wrap">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24"><polyline points="22,12 18,8 13,13 8,8 2,14"/></svg>
+    </div>
+    <div>
+      <div class="logo-txt">TRADE<span>MAX</span></div>
+      <div class="logo-sub">Academy Pro</div>
+    </div>
+  </div>
+  <div class="ticker">
+    <div class="tick"><span class="tick-s">IBOV</span><span class="tick-v" id="t-ibov">130.421</span><span class="tick-c up" id="tc-ibov">+0.82%</span></div>
+    <div class="tick"><span class="tick-s">WIN</span><span class="tick-v" id="t-win">130.680</span><span class="tick-c up">+0.61%</span></div>
+    <div class="tick"><span class="tick-s">USD</span><span class="tick-v" id="t-usd">5,034</span><span class="tick-c dn">−0.31%</span></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- ==============================
+     PAGE: HOME
+     ============================== -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="mentor-badge"><span class="pulse-dot"></span> IA MENTOR ONLINE</div>
+    <div class="hero-title">Aprenda<br>Day Trade<br><em>De Verdade</em></div>
+    <div class="hero-desc">Gráficos reais da B3 ao vivo • Mentor IA especializado • Do zero ao profissional</div>
+    <div class="hero-stats">
+      <div class="hs"><div class="hs-val">14</div><div class="hs-lbl">Módulos</div></div>
+      <div class="hs"><div class="hs-val">118</div><div class="hs-lbl">Aulas</div></div>
+      <div class="hs"><div class="hs-val">∞</div><div class="hs-lbl">Mentoria</div></div>
+    </div>
+  </div>
+
+  <div class="sec-head"><div class="sec-title">Mercado Agora</div><button class="sec-link" onclick="switchPage('chart')">Ver gráficos →</button></div>
+  <div class="mkt-grid">
+    <div class="mkt-card"><div class="mkt-sym">IBOVESPA</div><div class="mkt-val" id="mkt-ibov">130.421</div><span class="pill-up">+0.82%</span></div>
+    <div class="mkt-card"><div class="mkt-sym">WIN — MINI ÍNDICE</div><div class="mkt-val">130.680</div><span class="pill-up">+0.61%</span></div>
+    <div class="mkt-card"><div class="mkt-sym">DÓLAR SPOT</div><div class="mkt-val">R$ 5,034</div><span class="pill-dn">−0.31%</span></div>
+    <div class="mkt-card"><div class="mkt-sym">WDO — MINI DÓLAR</div><div class="mkt-val">5.033</div><span class="pill-dn">−0.34%</span></div>
+  </div>
+
+  <div class="sec-head"><div class="sec-title">Trilha de Aprendizado</div><button class="sec-link" onclick="switchPage('curso')">Ver tudo →</button></div>
+
+  <div class="mod-card" onclick="switchPage('curso')">
+    <div class="mod-icon" style="background:var(--b-dim)">📚</div>
+    <div class="mod-body">
+      <div class="mod-title">Módulo 1 — Fundamentos do Mercado</div>
+      <div class="mod-desc">B3, tipos de ativos, horários, ordens e participantes</div>
+      <div class="mod-meta"><span class="tag tag-b">8 aulas</span><span class="mod-pct">100% ✓</span></div>
+      <div class="prog-track"><div class="prog-fill" style="width:100%"></div></div>
+    </div>
+  </div>
+  <div class="mod-card" onclick="switchPage('curso')">
+    <div class="mod-icon" style="background:var(--o-dim)">📊</div>
+    <div class="mod-body">
+      <div class="mod-title">Módulo 2 — Análise Técnica Completa</div>
+      <div class="mod-desc">Tendências, suporte, resistência e padrões gráficos</div>
+      <div class="mod-meta"><span class="tag tag-o">12 aulas</span><span class="mod-pct">65%</span></div>
+      <div class="prog-track"><div class="prog-fill" style="width:65%"></div></div>
+    </div>
+  </div>
+  <div class="mod-card" onclick="switchPage('curso')">
+    <div class="mod-icon" style="background:var(--r-dim)">🛡️</div>
+    <div class="mod-body">
+      <div class="mod-title">Módulo 5 — Gestão de Risco</div>
+      <div class="mod-desc">Stop loss, position sizing e regra dos 2%</div>
+      <div class="mod-meta"><span class="tag tag-r">10 aulas</span><span class="mod-pct">0%</span></div>
+      <div class="prog-track"><div class="prog-fill" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div class="mod-card" onclick="switchPage('curso')">
+    <div class="mod-icon" style="background:var(--g-dim)">📈</div>
+    <div class="mod-body">
+      <div class="mod-title">Módulo 7 — Mini Contratos WIN & WDO</div>
+      <div class="mod-desc">Mini Índice e Mini Dólar completo</div>
+      <div class="mod-meta"><span class="tag tag-g">10 aulas</span><span class="mod-pct">0%</span></div>
+      <div class="prog-track"><div class="prog-fill" style="width:0%"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==============================
+     PAGE: CHART
+     ============================== -->
+<div class="page" id="page-chart">
+<div class="chart-page">
+
+  <div class="asset-grp-label">🔥 FUTUROS — MAIS OPERADOS</div>
+  <div class="asset-tabs">
+    <button class="atab active" onclick="loadChart(this,'BMFBOVESPA:WIN1!','WIN','Mini Índice Ibovespa','130.680','+795 +0.61%','up')">WIN — Mini Índice</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:WDO1!','WDO','Mini Dólar Futuro','5.033','-17 -0.34%','dn')">WDO — Mini Dólar</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:ISP1!','ISP','Futuro S&P500 na B3','38.900','+170 +0.44%','up')">ISP — S&P Fut.</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:CCM1!','CCM','Futuro Café Arábica','1.340','+16 +1.2%','up')">CCM — Café</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:BGI1!','BGI','Futuro Boi Gordo','340,50','+2.9 +0.85%','up')">BGI — Boi Gordo</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:SFI1!','SFI','Futuro Soja','140,20','-0.42 -0.30%','dn')">SFI — Soja</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:MIL1!','MIL','Futuro Milho','62,80','+0.48 +0.77%','up')">MIL — Milho</button>
+  </div>
+
+  <div class="asset-grp-label">🏢 AÇÕES B3 — BLUE CHIPS</div>
+  <div class="asset-tabs">
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:PETR4','PETR4','Petrobras PN','R$ 38,42','+0.28 +0.74%','up')">PETR4</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:VALE3','VALE3','Vale ON','R$ 62,80','-0.28 -0.45%','dn')">VALE3</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:ITUB4','ITUB4','Itaú Unibanco PN','R$ 33,90','+0.10 +0.30%','up')">ITUB4</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:BBDC4','BBDC4','Bradesco PN','R$ 13,45','-0.02 -0.15%','dn')">BBDC4</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:BBAS3','BBAS3','Banco do Brasil ON','R$ 25,80','+0.28 +1.10%','up')">BBAS3</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:ABEV3','ABEV3','Ambev ON','R$ 11,20','+0.06 +0.54%','up')">ABEV3</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:WEGE3','WEGE3','WEG ON','R$ 47,60','+0.40 +0.85%','up')">WEGE3</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:RENT3','RENT3','Localiza ON','R$ 38,50','-0.10 -0.26%','dn')">RENT3</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:SUZB3','SUZB3','Suzano ON','R$ 58,20','+0.80 +1.40%','up')">SUZB3</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:JBSS3','JBSS3','JBS ON','R$ 32,10','+0.20 +0.63%','up')">JBSS3</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:GGBR4','GGBR4','Gerdau PN','R$ 20,30','-0.10 -0.49%','dn')">GGBR4</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:CSNA3','CSNA3','CSN ON','R$ 12,80','+0.10 +0.79%','up')">CSNA3</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:PETR3','PETR3','Petrobras ON','R$ 35,60','+0.20 +0.56%','up')">PETR3</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:ITSA4','ITSA4','Itaúsa PN','R$ 10,24','+0.08 +0.79%','up')">ITSA4</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:LEVE3','LEVE3','Metal Leve ON','R$ 28,40','+0.60 +2.15%','up')">LEVE3</button>
+  </div>
+
+  <div class="asset-grp-label">🏦 SETOR FINANCEIRO</div>
+  <div class="asset-tabs">
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:SANB11','SANB11','Santander Brasil UNIT','R$ 26,40','+0.06 +0.23%','up')">SANB11</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:BPAC11','BPAC11','BTG Pactual UNIT','R$ 34,50','+0.20 +0.58%','up')">BPAC11</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:B3SA3','B3SA3','B3 ON','R$ 11,80','-0.02 -0.17%','dn')">B3SA3</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:IRBR3','IRBR3','IRB Brasil ON','R$ 3,42','+0.07 +2.10%','up')">IRBR3</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:CIEL3','CIEL3','Cielo ON','R$ 6,80','-0.03 -0.44%','dn')">CIEL3</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:PSSA3','PSSA3','Porto Seguro ON','R$ 42,10','+0.30 +0.72%','up')">PSSA3</button>
+  </div>
+
+  <div class="asset-grp-label">🛒 VAREJO & CONSUMO</div>
+  <div class="asset-tabs">
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:MGLU3','MGLU3','Magazine Luiza ON','R$ 2,18','-0.04 -1.80%','dn')">MGLU3</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:LREN3','LREN3','Lojas Renner ON','R$ 14,20','+0.12 +0.85%','up')">LREN3</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:RADL3','RADL3','Raia Drogasil ON','R$ 27,60','+0.11 +0.40%','up')">RADL3</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:AMER3','AMER3','Americanas ON','R$ 0,98','+0.03 +3.16%','up')">AMER3</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:PCAR3','PCAR3','GPA ON','R$ 8,40','-0.10 -1.18%','dn')">PCAR3</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:ASAI3','ASAI3','Assaí ON','R$ 12,30','+0.24 +1.99%','up')">ASAI3</button>
+  </div>
+
+  <div class="asset-grp-label">⚡ ENERGIA & UTILITIES</div>
+  <div class="asset-tabs">
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:ELET3','ELET3','Eletrobras ON','R$ 42,10','+0.40 +0.95%','up')">ELET3</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:ELET6','ELET6','Eletrobras PNB','R$ 41,80','+0.36 +0.87%','up')">ELET6</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:CPFE3','CPFE3','CPFL Energia ON','R$ 31,50','+0.10 +0.32%','up')">CPFE3</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:ENGI11','ENGI11','Energisa UNIT','R$ 46,70','+0.21 +0.45%','up')">ENGI11</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:SBSP3','SBSP3','Sabesp ON','R$ 78,40','+0.94 +1.20%','up')">SBSP3</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:CMIG4','CMIG4','Cemig PN','R$ 8,90','-0.02 -0.22%','dn')">CMIG4</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:TAEE11','TAEE11','Taesa UNIT','R$ 10,40','+0.08 +0.77%','up')">TAEE11</button>
+  </div>
+
+  <div class="asset-grp-label">💻 TECNOLOGIA</div>
+  <div class="asset-tabs">
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:TOTS3','TOTS3','TOTVS ON','R$ 32,40','+0.20 +0.62%','up')">TOTS3</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:MELI34','MELI34','Mercado Livre BDR','R$ 560,20','+7.45 +1.35%','up')">MELI34</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:POSI3','POSI3','Positivo Tech ON','R$ 7,80','+0.30 +4.00%','up')">POSI3</button>
+  </div>
+
+  <div class="asset-grp-label">📦 ETFs — FUNDOS NEGOCIADOS</div>
+  <div class="asset-tabs">
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:BOVA11','BOVA11','iShares Ibovespa ETF','R$ 130,42','+1.06 +0.82%','up')">BOVA11</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:IVVB11','IVVB11','iShares S&P500 ETF BRL','R$ 412,80','+1.81 +0.44%','up')">IVVB11</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:SMAL11','SMAL11','iShares Small Cap ETF','R$ 104,20','+0.67 +0.65%','up')">SMAL11</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:GOLD11','GOLD11','Ouro ETF BRL','R$ 362,40','+3.99 +1.10%','up')">GOLD11</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:HASH11','HASH11','Hashdex Cripto ETF','R$ 38,60','+0.93 +2.45%','up')">HASH11</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:DIVO11','DIVO11','Dividendos ETF','R$ 48,20','+0.24 +0.50%','up')">DIVO11</button>
+  </div>
+
+  <div class="asset-grp-label">🌎 BDRs — AÇÕES INTERNACIONAIS</div>
+  <div class="asset-tabs">
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:AAPL34','AAPL34','Apple Inc. BDR','R$ 68,40','+0.58 +0.85%','up')">AAPL34</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:MSFT34','MSFT34','Microsoft Corp. BDR','R$ 132,60','+0.69 +0.52%','up')">MSFT34</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:AMZO34','AMZO34','Amazon.com BDR','R$ 96,40','+1.15 +1.20%','up')">AMZO34</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:GOGL34','GOGL34','Alphabet/Google BDR','R$ 84,20','+0.62 +0.74%','up')">GOGL34</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:TSLA34','TSLA34','Tesla Inc. BDR','R$ 76,80','-1.09 -1.40%','dn')">TSLA34</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:NVDC34','NVDC34','Nvidia Corp. BDR','R$ 248,60','+7.68 +3.20%','up')">NVDC34</button>
+    <button class="atab" onclick="loadChart(this,'BMFBOVESPA:META34','META34','Meta Platforms BDR','R$ 112,40','+1.46 +1.31%','up')">META34</button>
+  </div>
+
+  <div class="asset-grp-label">💱 FOREX & COMMODITIES</div>
+  <div class="asset-tabs">
+    <button class="atab" onclick="loadChart(this,'FX:USDBRL','USD/BRL','Dólar / Real Brasileiro','5,034','-0.016 -0.31%','dn')">USD/BRL</button>
+    <button class="atab" onclick="loadChart(this,'FX:EURBRL','EUR/BRL','Euro / Real Brasileiro','5,480','+0.008 +0.15%','up')">EUR/BRL</button>
+    <button class="atab" onclick="loadChart(this,'TVC:GOLD','XAU/USD','Ouro Spot Internacional','3.120','+17.2 +0.55%','up')">Ouro XAU</button>
+    <button class="atab" onclick="loadChart(this,'TVC:USOIL','WTI','Petróleo WTI Crude','78,40','-0.25 -0.32%','dn')">WTI Petróleo</button>
+    <button class="atab" onclick="loadChart(this,'COINBASE:BTCUSD','BTC/USD','Bitcoin','98.420','+2.060 +2.14%','up')">Bitcoin</button>
+    <button class="atab" onclick="loadChart(this,'COINBASE:ETHUSD','ETH/USD','Ethereum','2.840','+51.5 +1.85%','up')">Ethereum</button>
+  </div>
+
+  <!-- CHART — Lightweight Charts (open source da TradingView) -->
+  <div class="chart-card">
+    <div class="chart-hdr">
+      <div>
+        <div class="ch-sym" id="ch-sym">WIN</div>
+        <div class="ch-name" id="ch-name">Mini Índice Ibovespa</div>
+      </div>
+      <div>
+        <div class="ch-price" id="ch-price">130.680</div>
+        <div class="ch-chg up" id="ch-chg">▲ +795 +0.61%</div>
+      </div>
+    </div>
+
+    <div class="tv-frame-wrap">
+      <div class="tv-loading" id="tv-loading">
+        <div class="tv-loading-spinner"></div>
+        <span>Carregando gráfico...</span>
+      </div>
+      <div id="tv-widget-container"></div>
+    </div>
+
+    <div class="tf-row">
+      <button class="tf-btn" onclick="setTF(this,'1')">1m</button>
+      <button class="tf-btn active" onclick="setTF(this,'5')">5m</button>
+      <button class="tf-btn" onclick="setTF(this,'15')">15m</button>
+      <button class="tf-btn" onclick="setTF(this,'30')">30m</button>
+      <button class="tf-btn" onclick="setTF(this,'60')">1h</button>
+      <button class="tf-btn" onclick="setTF(this,'240')">4h</button>
+      <button class="tf-btn" onclick="setTF(this,'D')">Diário</button>
+      <button class="tf-btn" onclick="setTF(this,'W')">Semanal</button>
+    </div>
+  </div>
+
+  <div class="sec-head" style="padding-left:0;padding-right:0"><div class="sec-title">Análise do Mentor IA</div><button class="sec-link" onclick="switchPage('mentor')">Perguntar →</button></div>
+
+  <div class="analysis-blk">
+    <div class="ablk-head"><span class="ablk-icon">📊</span><span class="ablk-title g">Tendência & Viés</span></div>
+    <div class="ablk-body" id="ab-trend">Selecione um ativo para ver a análise.</div>
+  </div>
+  <div class="analysis-blk">
+    <div class="ablk-head"><span class="ablk-icon">🎯</span><span class="ablk-title b">Suportes & Resistências</span></div>
+    <div class="ablk-body" id="ab-levels">Aguardando seleção de ativo.</div>
+  </div>
+  <div class="analysis-blk">
+    <div class="ablk-head"><span class="ablk-icon">⚡</span><span class="ablk-title o">Setup em Destaque</span></div>
+    <div class="ablk-body" id="ab-setup">Aguardando seleção de ativo.</div>
+  </div>
+
+  <div class="sec-head" style="padding-left:0;padding-right:0"><div class="sec-title">Indicadores ao Vivo</div></div>
+  <div class="ind-table">
+    <div class="ind-row"><span class="ind-name">RSI (14)</span><span class="ind-val" id="ind-rsi">58,4</span><span class="signal n">Neutro</span></div>
+    <div class="ind-row"><span class="ind-name">MACD (12,26,9)</span><span class="ind-val" style="color:var(--g)">Histograma +</span><span class="signal c">Compra</span></div>
+    <div class="ind-row"><span class="ind-name">EMA 21</span><span class="ind-val" id="ind-ema21">—</span><span class="signal c">Acima</span></div>
+    <div class="ind-row"><span class="ind-name">EMA 72</span><span class="ind-val" id="ind-ema72">—</span><span class="signal c">Acima</span></div>
+    <div class="ind-row"><span class="ind-name">VWAP</span><span class="ind-val" id="ind-vwap">—</span><span class="signal c">Acima VWAP</span></div>
+    <div class="ind-row"><span class="ind-name">Estocástico (14,3)</span><span class="ind-val">62,1 / 58,3</span><span class="signal n">Neutro</span></div>
+    <div class="ind-row"><span class="ind-name">Bollinger (20,2)</span><span class="ind-val">Expansão</span><span class="signal c">Alta Vol.</span></div>
+    <div class="ind-row"><span class="ind-name">Volume vs Média 20</span><span class="ind-val" style="color:var(--g)">+38%</span><span class="signal c">Forte</span></div>
+    <div class="ind-row"><span class="ind-name">ADX (14)</span><span class="ind-val">28,3</span><span class="signal c">Tendência</span></div>
+  </div>
+
+  <div class="sec-head" style="padding-left:0;padding-right:0"><div class="sec-title">Exemplo de Operação</div></div>
+  <div class="trade-ex">
+    <div class="te-head" id="te-head">Setup: Pullback com Média — WIN</div>
+    <div class="te-row"><span class="te-label">Entrada</span><span class="te-val" id="te-ent">130.500</span></div>
+    <div class="te-row"><span class="te-label">Stop Loss</span><span class="te-val r" id="te-stop">130.300 (−R$ 40/contrato)</span></div>
+    <div class="te-row"><span class="te-label">Alvo 1</span><span class="te-val g" id="te-a1">130.900 (+R$ 80)</span></div>
+    <div class="te-row"><span class="te-label">Alvo 2</span><span class="te-val g" id="te-a2">131.300 (+R$ 160)</span></div>
+    <div class="te-row"><span class="te-label">Risco/Retorno</span><span class="te-val g">2,0 : 1 → 4,0 : 1</span></div>
+    <div class="te-row"><span class="te-label">Tipo de Ordem</span><span class="te-val">Stop Limit</span></div>
+  </div>
+
+</div>
+</div><!-- page-chart -->
+
+<!-- ==============================
+     PAGE: MENTOR IA
+     ============================== -->
+<div class="page" id="page-mentor" style="padding:0">
+<div class="chat-page">
+  <div class="chat-top-bar">
+    <div class="mentor-av">🤖</div>
+    <div>
+      <div class="mentor-nm">Max — IA Mentor</div>
+      <div class="mentor-st"><span class="pulse-dot"></span> Especialista B3 • Online</div>
+    </div>
+  </div>
+  <div class="chat-msgs" id="chat-msgs">
+    <div class="msg bot">
+      <div class="msg-sender">MAX — IA MENTOR</div>
+      <div class="bubble">👋 Olá! Sou o <b>Max</b>, IA Mentora especializada em Day Trade na B3.<br><br>
+        Posso ensinar sobre:<br>
+        <div class="hl">📊 Análise técnica, candlestick, indicadores, setups</div>
+        <div class="hl">🛡️ Gestão de risco, stop loss, position sizing</div>
+        <div class="hl">📈 WIN, WDO, ações, ETFs, BDRs</div>
+        <div class="hl">💻 Clear Corretora, Profit Pro/Neológica</div>
+        O que quer aprender hoje?
+      </div>
+    </div>
+  </div>
+  <div class="chips">
+    <button class="chip" onclick="ask('Explique suporte e resistência com exemplos')">Suporte & Resistência</button>
+    <button class="chip" onclick="ask('Como calcular stop loss corretamente?')">Stop Loss</button>
+    <button class="chip" onclick="ask('Tudo sobre o Mini Índice WIN')">Mini Índice WIN</button>
+    <button class="chip" onclick="ask('Como montar um setup de entrada profissional?')">Setup Entrada</button>
+    <button class="chip" onclick="ask('Como configurar o Profit Pro para Day Trade?')">Profit Pro</button>
+    <button class="chip" onclick="ask('Explique a regra dos 2% de risco')">Regra dos 2%</button>
+    <button class="chip" onclick="ask('O que é VWAP e como usar?')">VWAP</button>
+    <button class="chip" onclick="ask('Como abrir conta na Clear Corretora?')">Clear Corretora</button>
+    <button class="chip" onclick="ask('Melhores indicadores para Day Trade')">Indicadores</button>
+    <button class="chip" onclick="ask('Psicologia do trader e controle emocional')">Psicologia</button>
+    <button class="chip" onclick="ask('Como operar o Mini Dólar WDO?')">Mini Dólar WDO</button>
+    <button class="chip" onclick="ask('Quais os horários mais importantes do pregão?')">Horários B3</button>
+    <button class="chip" onclick="ask('Como ler candlesticks e padrões de vela?')">Candlesticks</button>
+    <button class="chip" onclick="ask('Explique o MACD em detalhes')">MACD</button>
+    <button class="chip" onclick="ask('O que é price action e como operar?')">Price Action</button>
+    <button class="chip" onclick="ask('Como pagar IR no Day Trade? DARF e cálculo')">IR no Day Trade</button>
+    <button class="chip" onclick="ask('O que é scalping e como praticar?')">Scalping</button>
+    <button class="chip" onclick="ask('Como ler o book de ofertas?')">Book de Ofertas</button>
+  </div>
+  <div class="chat-inp-bar">
+    <input class="chat-inp" id="chat-inp" placeholder="Pergunte qualquer coisa sobre Day Trade..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}">
+    <button class="send-btn" onclick="sendMsg()">
+      <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2" fill="currentColor" stroke="none"/></svg>
+    </button>
+  </div>
+</div>
+</div>
+
+<!-- ==============================
+     PAGE: CURSO — MODULES + LESSONS
+     ============================== -->
+<div class="page" id="page-curso">
+<div class="curso-page">
+  <div class="prog-banner">
+    <div class="pb-title">Trilha Completa</div>
+    <div class="pb-sub">14 módulos • 118 aulas • Do zero ao profissional</div>
+    <div class="pb-stats">
+      <div><div class="pbs-v">2</div><div class="pbs-l">Módulos OK</div></div>
+      <div><div class="pbs-v">14%</div><div class="pbs-l">Progresso</div></div>
+      <div><div class="pbs-v">118</div><div class="pbs-l">Aulas</div></div>
+    </div>
+    <div class="prog-track" style="height:5px"><div class="prog-fill" style="width:14%"></div></div>
+  </div>
+
+  <!-- ---- MODULE 1 ---- -->
+  <div class="mod-row" id="mod-1" onclick="toggleMod('mod-1')">
+    <div class="mod-row-head">
+      <div class="mod-num num-done">✓</div>
+      <div class="mod-row-body">
+        <div class="mod-row-title">Módulo 1 — Fundamentos do Mercado</div>
+        <div class="mod-row-desc">B3, tipos de ativos, horários, participantes e mecânica das ordens</div>
+        <div class="mod-row-tags"><span class="tag tag-b">Fundamentos</span><span class="tag tag-g">8 aulas ✓</span></div>
+      </div>
+      <div class="mod-row-arrow">›</div>
+    </div>
+    <div class="lesson-list">
+      <div class="lesson-item" onclick="openLesson('m1a1',event)"><div class="lesson-num done">✓</div><div class="lesson-content"><div class="lesson-title">Aula 1 — O que é a B3 e como funciona</div><div class="lesson-dur">⏱ 18 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m1a2',event)"><div class="lesson-num done">✓</div><div class="lesson-content"><div class="lesson-title">Aula 2 — Tipos de ativos: Ações, Futuros, ETFs, FIIs</div><div class="lesson-dur">⏱ 22 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m1a3',event)"><div class="lesson-num done">✓</div><div class="lesson-content"><div class="lesson-title">Aula 3 — Horários do pregão e sessões</div><div class="lesson-dur">⏱ 15 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m1a4',event)"><div class="lesson-num done">✓</div><div class="lesson-content"><div class="lesson-title">Aula 4 — Participantes do mercado</div><div class="lesson-dur">⏱ 20 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m1a5',event)"><div class="lesson-num done">✓</div><div class="lesson-content"><div class="lesson-title">Aula 5 — Tipos de ordem: Mercado, Limitada, Stop</div><div class="lesson-dur">⏱ 25 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m1a6',event)"><div class="lesson-num done">✓</div><div class="lesson-content"><div class="lesson-title">Aula 6 — Como funciona o Book de Ofertas</div><div class="lesson-dur">⏱ 20 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m1a7',event)"><div class="lesson-num done">✓</div><div class="lesson-content"><div class="lesson-title">Aula 7 — Liquidez e spread: o que importa</div><div class="lesson-dur">⏱ 18 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m1a8',event)"><div class="lesson-num done">✓</div><div class="lesson-content"><div class="lesson-title">Aula 8 — Day Trade vs Swing vs Position</div><div class="lesson-dur">⏱ 22 min</div></div><div class="lesson-play">▶</div></div>
+    </div>
+  </div>
+
+  <!-- ---- MODULE 2 ---- -->
+  <div class="mod-row" id="mod-2" onclick="toggleMod('mod-2')">
+    <div class="mod-row-head">
+      <div class="mod-num num-prog">2</div>
+      <div class="mod-row-body">
+        <div class="mod-row-title">Módulo 2 — Análise Técnica Completa</div>
+        <div class="mod-row-desc">Tendências, suporte, resistência, padrões gráficos clássicos e avançados</div>
+        <div class="mod-row-tags"><span class="tag tag-o">Análise Técnica</span><span class="tag tag-o">12 aulas</span></div>
+      </div>
+      <div class="mod-row-arrow">›</div>
+    </div>
+    <div class="lesson-list">
+      <div class="lesson-item" onclick="openLesson('m2a1',event)"><div class="lesson-num done">✓</div><div class="lesson-content"><div class="lesson-title">Aula 1 — Os 3 pilares da Análise Técnica</div><div class="lesson-dur">⏱ 20 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m2a2',event)"><div class="lesson-num done">✓</div><div class="lesson-content"><div class="lesson-title">Aula 2 — Tendência de alta, baixa e lateralização</div><div class="lesson-dur">⏱ 25 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m2a3',event)"><div class="lesson-num done">✓</div><div class="lesson-content"><div class="lesson-title">Aula 3 — Suporte e resistência: identificação e uso</div><div class="lesson-dur">⏱ 30 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m2a4',event)"><div class="lesson-num done">✓</div><div class="lesson-content"><div class="lesson-title">Aula 4 — Linhas de tendência e canais</div><div class="lesson-dur">⏱ 22 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m2a5',event)"><div class="lesson-num">5</div><div class="lesson-content"><div class="lesson-title">Aula 5 — Padrão Topo Duplo e Fundo Duplo</div><div class="lesson-dur">⏱ 28 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m2a6',event)"><div class="lesson-num">6</div><div class="lesson-content"><div class="lesson-title">Aula 6 — Cabeça e Ombros</div><div class="lesson-dur">⏱ 25 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m2a7',event)"><div class="lesson-num">7</div><div class="lesson-content"><div class="lesson-title">Aula 7 — Triângulos: ascendente, descendente e simétrico</div><div class="lesson-dur">⏱ 26 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m2a8',event)"><div class="lesson-num">8</div><div class="lesson-content"><div class="lesson-title">Aula 8 — Bandeiras e flâmulas</div><div class="lesson-dur">⏱ 20 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m2a9',event)"><div class="lesson-num">9</div><div class="lesson-content"><div class="lesson-title">Aula 9 — Retração de Fibonacci</div><div class="lesson-dur">⏱ 30 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m2a10',event)"><div class="lesson-num">10</div><div class="lesson-content"><div class="lesson-title">Aula 10 — Zonas de oferta e demanda (Supply & Demand)</div><div class="lesson-dur">⏱ 32 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m2a11',event)"><div class="lesson-num">11</div><div class="lesson-content"><div class="lesson-title">Aula 11 — Múltiplos timeframes (análise top-down)</div><div class="lesson-dur">⏱ 28 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m2a12',event)"><div class="lesson-num">12</div><div class="lesson-content"><div class="lesson-title">Aula 12 — Prática: identificando padrões no gráfico real</div><div class="lesson-dur">⏱ 40 min</div></div><div class="lesson-play">▶</div></div>
+    </div>
+  </div>
+
+  <!-- ---- MODULE 3 ---- -->
+  <div class="mod-row" id="mod-3" onclick="toggleMod('mod-3')">
+    <div class="mod-row-head">
+      <div class="mod-num num-lock">3</div>
+      <div class="mod-row-body">
+        <div class="mod-row-title">Módulo 3 — Candlestick & Price Action</div>
+        <div class="mod-row-desc">Leitura de velas, padrões de reversão, continuação e tape reading</div>
+        <div class="mod-row-tags"><span class="tag tag-o">Price Action</span><span class="tag tag-o">10 aulas</span></div>
+      </div>
+      <div class="mod-row-arrow">›</div>
+    </div>
+    <div class="lesson-list">
+      <div class="lesson-item" onclick="openLesson('m3a1',event)"><div class="lesson-num">1</div><div class="lesson-content"><div class="lesson-title">Aula 1 — Anatomia do candlestick: corpo, sombra, cor</div><div class="lesson-dur">⏱ 20 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m3a2',event)"><div class="lesson-num">2</div><div class="lesson-content"><div class="lesson-title">Aula 2 — Candles de reversão: Martelo e Estrela Cadente</div><div class="lesson-dur">⏱ 25 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m3a3',event)"><div class="lesson-num">3</div><div class="lesson-content"><div class="lesson-title">Aula 3 — Engolfo de alta e engolfo de baixa</div><div class="lesson-dur">⏱ 22 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m3a4',event)"><div class="lesson-num">4</div><div class="lesson-content"><div class="lesson-title">Aula 4 — Doji: indecisão e reversão</div><div class="lesson-dur">⏱ 18 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m3a5',event)"><div class="lesson-num">5</div><div class="lesson-content"><div class="lesson-title">Aula 5 — Morning Star e Evening Star</div><div class="lesson-dur">⏱ 24 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m3a6',event)"><div class="lesson-num">6</div><div class="lesson-content"><div class="lesson-title">Aula 6 — Pin Bar: rejeição de preço</div><div class="lesson-dur">⏱ 22 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m3a7',event)"><div class="lesson-num">7</div><div class="lesson-content"><div class="lesson-title">Aula 7 — Inside Bar e Outside Bar</div><div class="lesson-dur">⏱ 20 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m3a8',event)"><div class="lesson-num">8</div><div class="lesson-content"><div class="lesson-title">Aula 8 — Leitura do Tape: Times & Trades</div><div class="lesson-dur">⏱ 35 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m3a9',event)"><div class="lesson-num">9</div><div class="lesson-content"><div class="lesson-title">Aula 9 — Fluxo de ordens e agressores</div><div class="lesson-dur">⏱ 30 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m3a10',event)"><div class="lesson-num">10</div><div class="lesson-content"><div class="lesson-title">Aula 10 — Prática: lendo o gráfico ao vivo</div><div class="lesson-dur">⏱ 45 min</div></div><div class="lesson-play">▶</div></div>
+    </div>
+  </div>
+
+  <!-- ---- MODULE 4 ---- -->
+  <div class="mod-row" id="mod-4" onclick="toggleMod('mod-4')">
+    <div class="mod-row-head">
+      <div class="mod-num num-lock">4</div>
+      <div class="mod-row-body">
+        <div class="mod-row-title">Módulo 4 — Indicadores & Osciladores</div>
+        <div class="mod-row-desc">Médias Móveis, MACD, RSI, Bollinger, VWAP, Volume Profile, ADX</div>
+        <div class="mod-row-tags"><span class="tag tag-p">Indicadores</span><span class="tag tag-p">14 aulas</span></div>
+      </div>
+      <div class="mod-row-arrow">›</div>
+    </div>
+    <div class="lesson-list">
+      <div class="lesson-item" onclick="openLesson('m4a1',event)"><div class="lesson-num">1</div><div class="lesson-content"><div class="lesson-title">Aula 1 — Médias Móveis: Simples vs Exponencial</div><div class="lesson-dur">⏱ 28 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m4a2',event)"><div class="lesson-num">2</div><div class="lesson-content"><div class="lesson-title">Aula 2 — EMA 21 e EMA 72 no Day Trade</div><div class="lesson-dur">⏱ 25 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m4a3',event)"><div class="lesson-num">3</div><div class="lesson-content"><div class="lesson-title">Aula 3 — VWAP: o indicador dos profissionais</div><div class="lesson-dur">⏱ 30 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m4a4',event)"><div class="lesson-num">4</div><div class="lesson-content"><div class="lesson-title">Aula 4 — RSI / IFR: leitura e divergências</div><div class="lesson-dur">⏱ 26 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m4a5',event)"><div class="lesson-num">5</div><div class="lesson-content"><div class="lesson-title">Aula 5 — MACD: momentum e cruzamentos</div><div class="lesson-dur">⏱ 28 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m4a6',event)"><div class="lesson-num">6</div><div class="lesson-content"><div class="lesson-title">Aula 6 — Bandas de Bollinger e squeeze</div><div class="lesson-dur">⏱ 25 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m4a7',event)"><div class="lesson-num">7</div><div class="lesson-content"><div class="lesson-title">Aula 7 — Estocástico e sinalização</div><div class="lesson-dur">⏱ 22 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m4a8',event)"><div class="lesson-num">8</div><div class="lesson-content"><div class="lesson-title">Aula 8 — ADX: medindo força da tendência</div><div class="lesson-dur">⏱ 20 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m4a9',event)"><div class="lesson-num">9</div><div class="lesson-content"><div class="lesson-title">Aula 9 — Volume Profile e Point of Control</div><div class="lesson-dur">⏱ 35 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m4a10',event)"><div class="lesson-num">10</div><div class="lesson-content"><div class="lesson-title">Aula 10 — OBV e indicadores de volume</div><div class="lesson-dur">⏱ 22 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m4a11',event)"><div class="lesson-num">11</div><div class="lesson-content"><div class="lesson-title">Aula 11 — Divergências: ouro da análise técnica</div><div class="lesson-dur">⏱ 30 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m4a12',event)"><div class="lesson-num">12</div><div class="lesson-content"><div class="lesson-title">Aula 12 — Combinando indicadores sem sobrecarregar</div><div class="lesson-dur">⏱ 25 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m4a13',event)"><div class="lesson-num">13</div><div class="lesson-content"><div class="lesson-title">Aula 13 — Configuração ideal no Profit Pro</div><div class="lesson-dur">⏱ 28 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m4a14',event)"><div class="lesson-num">14</div><div class="lesson-content"><div class="lesson-title">Aula 14 — Prática ao vivo com todos os indicadores</div><div class="lesson-dur">⏱ 50 min</div></div><div class="lesson-play">▶</div></div>
+    </div>
+  </div>
+
+  <!-- ---- MODULE 5 ---- -->
+  <div class="mod-row" id="mod-5" onclick="toggleMod('mod-5')">
+    <div class="mod-row-head">
+      <div class="mod-num num-lock">5</div>
+      <div class="mod-row-body">
+        <div class="mod-row-title">Módulo 5 — Gestão de Risco Profissional</div>
+        <div class="mod-row-desc">Stop loss, position sizing, risco/retorno, drawdown e stop do dia</div>
+        <div class="mod-row-tags"><span class="tag tag-r">Risco</span><span class="tag tag-r">10 aulas</span></div>
+      </div>
+      <div class="mod-row-arrow">›</div>
+    </div>
+    <div class="lesson-list">
+      <div class="lesson-item" onclick="openLesson('m5a1',event)"><div class="lesson-num">1</div><div class="lesson-content"><div class="lesson-title">Aula 1 — Por que gestão de risco é mais importante que o setup</div><div class="lesson-dur">⏱ 22 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m5a2',event)"><div class="lesson-num">2</div><div class="lesson-content"><div class="lesson-title">Aula 2 — A Regra dos 2%: fundamento da sobrevivência</div><div class="lesson-dur">⏱ 25 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m5a3',event)"><div class="lesson-num">3</div><div class="lesson-content"><div class="lesson-title">Aula 3 — Position Sizing: calculando o tamanho da posição</div><div class="lesson-dur">⏱ 30 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m5a4',event)"><div class="lesson-num">4</div><div class="lesson-content"><div class="lesson-title">Aula 4 — Stop Loss técnico vs financeiro</div><div class="lesson-dur">⏱ 25 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m5a5',event)"><div class="lesson-num">5</div><div class="lesson-content"><div class="lesson-title">Aula 5 — Stop móvel (trailing stop)</div><div class="lesson-dur">⏱ 22 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m5a6',event)"><div class="lesson-num">6</div><div class="lesson-content"><div class="lesson-title">Aula 6 — Risco/Retorno: a matemática do sucesso</div><div class="lesson-dur">⏱ 28 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m5a7',event)"><div class="lesson-num">7</div><div class="lesson-content"><div class="lesson-title">Aula 7 — Stop do dia: quando parar de operar</div><div class="lesson-dur">⏱ 20 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m5a8',event)"><div class="lesson-num">8</div><div class="lesson-content"><div class="lesson-title">Aula 8 — Drawdown máximo e recuperação de conta</div><div class="lesson-dur">⏱ 25 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m5a9',event)"><div class="lesson-num">9</div><div class="lesson-content"><div class="lesson-title">Aula 9 — Métricas: Win Rate, Payoff e Expectativa</div><div class="lesson-dur">⏱ 28 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m5a10',event)"><div class="lesson-num">10</div><div class="lesson-content"><div class="lesson-title">Aula 10 — Construindo um plano de risco pessoal</div><div class="lesson-dur">⏱ 32 min</div></div><div class="lesson-play">▶</div></div>
+    </div>
+  </div>
+
+  <!-- ---- MODULE 6 ---- -->
+  <div class="mod-row" id="mod-6" onclick="toggleMod('mod-6')">
+    <div class="mod-row-head">
+      <div class="mod-num num-lock">6</div>
+      <div class="mod-row-body">
+        <div class="mod-row-title">Módulo 6 — Estratégias de Day Trade</div>
+        <div class="mod-row-desc">Scalping, ORB, pullback, rompimento, reversão e operações na abertura</div>
+        <div class="mod-row-tags"><span class="tag tag-r">Avançado</span><span class="tag tag-r">12 aulas</span></div>
+      </div>
+      <div class="mod-row-arrow">›</div>
+    </div>
+    <div class="lesson-list">
+      <div class="lesson-item" onclick="openLesson('m6a1',event)"><div class="lesson-num">1</div><div class="lesson-content"><div class="lesson-title">Aula 1 — Scalping: operações de segundos a minutos</div><div class="lesson-dur">⏱ 30 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m6a2',event)"><div class="lesson-num">2</div><div class="lesson-content"><div class="lesson-title">Aula 2 — ORB: Opening Range Breakout</div><div class="lesson-dur">⏱ 35 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m6a3',event)"><div class="lesson-num">3</div><div class="lesson-content"><div class="lesson-title">Aula 3 — Setup Pullback com Média Móvel</div><div class="lesson-dur">⏱ 32 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m6a4',event)"><div class="lesson-num">4</div><div class="lesson-content"><div class="lesson-title">Aula 4 — Setup de Rompimento (Breakout)</div><div class="lesson-dur">⏱ 30 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m6a5',event)"><div class="lesson-num">5</div><div class="lesson-content"><div class="lesson-title">Aula 5 — Reversão no suporte/resistência</div><div class="lesson-dur">⏱ 28 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m6a6',event)"><div class="lesson-num">6</div><div class="lesson-content"><div class="lesson-title">Aula 6 — Bounce no VWAP</div><div class="lesson-dur">⏱ 25 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m6a7',event)"><div class="lesson-num">7</div><div class="lesson-content"><div class="lesson-title">Aula 7 — Estratégia de abertura (9h-10h)</div><div class="lesson-dur">⏱ 35 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m6a8',event)"><div class="lesson-num">8</div><div class="lesson-content"><div class="lesson-title">Aula 8 — Correlação BR × EUA e horário americano</div><div class="lesson-dur">⏱ 28 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m6a9',event)"><div class="lesson-num">9</div><div class="lesson-content"><div class="lesson-title">Aula 9 — Estratégias de fechamento e after-market</div><div class="lesson-dur">⏱ 22 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m6a10',event)"><div class="lesson-num">10</div><div class="lesson-content"><div class="lesson-title">Aula 10 — Filtros para evitar operações ruins</div><div class="lesson-dur">⏱ 25 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m6a11',event)"><div class="lesson-num">11</div><div class="lesson-content"><div class="lesson-title">Aula 11 — Combinando múltiplos setups</div><div class="lesson-dur">⏱ 30 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m6a12',event)"><div class="lesson-num">12</div><div class="lesson-content"><div class="lesson-title">Aula 12 — Prática ao vivo: operando com setup real</div><div class="lesson-dur">⏱ 60 min</div></div><div class="lesson-play">▶</div></div>
+    </div>
+  </div>
+
+  <!-- ---- MODULE 7 ---- -->
+  <div class="mod-row" id="mod-7" onclick="toggleMod('mod-7')">
+    <div class="mod-row-head">
+      <div class="mod-num num-lock">7</div>
+      <div class="mod-row-body">
+        <div class="mod-row-title">Módulo 7 — Mini Contratos WIN & WDO</div>
+        <div class="mod-row-desc">Especificações, margens, estratégias e alavancagem no mercado futuro</div>
+        <div class="mod-row-tags"><span class="tag tag-g">Futuros</span><span class="tag tag-g">10 aulas</span></div>
+      </div>
+      <div class="mod-row-arrow">›</div>
+    </div>
+    <div class="lesson-list">
+      <div class="lesson-item" onclick="openLesson('m7a1',event)"><div class="lesson-num">1</div><div class="lesson-content"><div class="lesson-title">Aula 1 — O que são contratos futuros?</div><div class="lesson-dur">⏱ 20 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m7a2',event)"><div class="lesson-num">2</div><div class="lesson-content"><div class="lesson-title">Aula 2 — Mini Índice WIN: especificações completas</div><div class="lesson-dur">⏱ 28 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m7a3',event)"><div class="lesson-num">3</div><div class="lesson-content"><div class="lesson-title">Aula 3 — Mini Dólar WDO: especificações e fatores</div><div class="lesson-dur">⏱ 28 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m7a4',event)"><div class="lesson-num">4</div><div class="lesson-content"><div class="lesson-title">Aula 4 — Cálculo de resultado e margem</div><div class="lesson-dur">⏱ 25 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m7a5',event)"><div class="lesson-num">5</div><div class="lesson-content"><div class="lesson-title">Aula 5 — Rollagem de contratos e vencimentos</div><div class="lesson-dur">⏱ 22 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m7a6',event)"><div class="lesson-num">6</div><div class="lesson-content"><div class="lesson-title">Aula 6 — Estratégias para o WIN</div><div class="lesson-dur">⏱ 35 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m7a7',event)"><div class="lesson-num">7</div><div class="lesson-content"><div class="lesson-title">Aula 7 — Estratégias para o WDO</div><div class="lesson-dur">⏱ 32 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m7a8',event)"><div class="lesson-num">8</div><div class="lesson-content"><div class="lesson-title">Aula 8 — Gestão de risco em futuros alavancados</div><div class="lesson-dur">⏱ 28 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m7a9',event)"><div class="lesson-num">9</div><div class="lesson-content"><div class="lesson-title">Aula 9 — Calendário econômico e eventos que movem o WDO</div><div class="lesson-dur">⏱ 25 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m7a10',event)"><div class="lesson-num">10</div><div class="lesson-content"><div class="lesson-title">Aula 10 — Simulação: operando WIN e WDO ao vivo</div><div class="lesson-dur">⏱ 55 min</div></div><div class="lesson-play">▶</div></div>
+    </div>
+  </div>
+
+  <!-- ---- MODULES 8-14 (compact) ---- -->
+  <div class="mod-row" id="mod-8" onclick="toggleMod('mod-8')">
+    <div class="mod-row-head">
+      <div class="mod-num num-lock">8</div>
+      <div class="mod-row-body">
+        <div class="mod-row-title">Módulo 8 — Day Trade em Ações B3</div>
+        <div class="mod-row-desc">Seleção de papéis, liquidez, nível II, setores e agenda corporativa</div>
+        <div class="mod-row-tags"><span class="tag tag-b">Ações</span><span class="tag tag-b">8 aulas</span></div>
+      </div>
+      <div class="mod-row-arrow">›</div>
+    </div>
+    <div class="lesson-list">
+      <div class="lesson-item" onclick="openLesson('m8a1',event)"><div class="lesson-num">1</div><div class="lesson-content"><div class="lesson-title">Aula 1 — Como escolher ações para Day Trade</div><div class="lesson-dur">⏱ 25 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m8a2',event)"><div class="lesson-num">2</div><div class="lesson-content"><div class="lesson-title">Aula 2 — Liquidez e volume mínimo para operar</div><div class="lesson-dur">⏱ 20 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m8a3',event)"><div class="lesson-num">3</div><div class="lesson-content"><div class="lesson-title">Aula 3 — PETR4, VALE3, ITUB4: as favoritas</div><div class="lesson-dur">⏱ 30 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m8a4',event)"><div class="lesson-num">4</div><div class="lesson-content"><div class="lesson-title">Aula 4 — Nível II e book de ações</div><div class="lesson-dur">⏱ 28 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m8a5',event)"><div class="lesson-num">5</div><div class="lesson-content"><div class="lesson-title">Aula 5 — Agenda corporativa e eventos de mercado</div><div class="lesson-dur">⏱ 22 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m8a6',event)"><div class="lesson-num">6</div><div class="lesson-content"><div class="lesson-title">Aula 6 — Setores: energia, financeiro, commodities</div><div class="lesson-dur">⏱ 25 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m8a7',event)"><div class="lesson-num">7</div><div class="lesson-content"><div class="lesson-title">Aula 7 — Alavancagem Day Trade em ações (Clear)</div><div class="lesson-dur">⏱ 28 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m8a8',event)"><div class="lesson-num">8</div><div class="lesson-content"><div class="lesson-title">Aula 8 — Prática: operando ações ao vivo</div><div class="lesson-dur">⏱ 50 min</div></div><div class="lesson-play">▶</div></div>
+    </div>
+  </div>
+
+  <div class="mod-row" id="mod-9" onclick="toggleMod('mod-9')">
+    <div class="mod-row-head">
+      <div class="mod-num num-lock">9</div>
+      <div class="mod-row-body">
+        <div class="mod-row-title">Módulo 9 — Clear Corretora Completo</div>
+        <div class="mod-row-desc">Abertura de conta, taxas, plataforma, alavancagem e Profit Pro</div>
+        <div class="mod-row-tags"><span class="tag tag-g">Plataforma</span><span class="tag tag-g">6 aulas</span></div>
+      </div>
+      <div class="mod-row-arrow">›</div>
+    </div>
+    <div class="lesson-list">
+      <div class="lesson-item" onclick="openLesson('m9a1',event)"><div class="lesson-num">1</div><div class="lesson-content"><div class="lesson-title">Aula 1 — Por que escolher a Clear Corretora?</div><div class="lesson-dur">⏱ 15 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m9a2',event)"><div class="lesson-num">2</div><div class="lesson-content"><div class="lesson-title">Aula 2 — Abrindo sua conta: passo a passo</div><div class="lesson-dur">⏱ 20 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m9a3',event)"><div class="lesson-num">3</div><div class="lesson-content"><div class="lesson-title">Aula 3 — Tabela de taxas e custos operacionais</div><div class="lesson-dur">⏱ 18 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m9a4',event)"><div class="lesson-num">4</div><div class="lesson-content"><div class="lesson-title">Aula 4 — Habilitando Day Trade e alavancagem</div><div class="lesson-dur">⏱ 22 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m9a5',event)"><div class="lesson-num">5</div><div class="lesson-content"><div class="lesson-title">Aula 5 — Plataforma web da Clear: navegação</div><div class="lesson-dur">⏱ 25 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m9a6',event)"><div class="lesson-num">6</div><div class="lesson-content"><div class="lesson-title">Aula 6 — Conectando o Profit Pro à Clear</div><div class="lesson-dur">⏱ 28 min</div></div><div class="lesson-play">▶</div></div>
+    </div>
+  </div>
+
+  <div class="mod-row" id="mod-10" onclick="toggleMod('mod-10')">
+    <div class="mod-row-head">
+      <div class="mod-num num-lock">10</div>
+      <div class="mod-row-body">
+        <div class="mod-row-title">Módulo 10 — Profit Pro Neológica</div>
+        <div class="mod-row-desc">Instalação, configuração completa, layout e atalhos profissionais</div>
+        <div class="mod-row-tags"><span class="tag tag-b">Plataforma</span><span class="tag tag-b">10 aulas</span></div>
+      </div>
+      <div class="mod-row-arrow">›</div>
+    </div>
+    <div class="lesson-list">
+      <div class="lesson-item" onclick="openLesson('m10a1',event)"><div class="lesson-num">1</div><div class="lesson-content"><div class="lesson-title">Aula 1 — Download, instalação e primeiro acesso</div><div class="lesson-dur">⏱ 20 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m10a2',event)"><div class="lesson-num">2</div><div class="lesson-content"><div class="lesson-title">Aula 2 — Conectando à corretora e ativando dados</div><div class="lesson-dur">⏱ 18 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m10a3',event)"><div class="lesson-num">3</div><div class="lesson-content"><div class="lesson-title">Aula 3 — Configurando o gráfico profissional</div><div class="lesson-dur">⏱ 30 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m10a4',event)"><div class="lesson-num">4</div><div class="lesson-content"><div class="lesson-title">Aula 4 — Adicionando VWAP, EMA21, EMA72 e Volume</div><div class="lesson-dur">⏱ 25 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m10a5',event)"><div class="lesson-num">5</div><div class="lesson-content"><div class="lesson-title">Aula 5 — Book de Ofertas Nível II</div><div class="lesson-dur">⏱ 28 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m10a6',event)"><div class="lesson-num">6</div><div class="lesson-content"><div class="lesson-title">Aula 6 — Times & Trades e leitura do fluxo</div><div class="lesson-dur">⏱ 30 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m10a7',event)"><div class="lesson-num">7</div><div class="lesson-content"><div class="lesson-title">Aula 7 — Boleta rápida e envio de ordens</div><div class="lesson-dur">⏱ 25 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m10a8',event)"><div class="lesson-num">8</div><div class="lesson-content"><div class="lesson-title">Aula 8 — Atalhos de teclado F1 a F4 e mais</div><div class="lesson-dur">⏱ 22 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m10a9',event)"><div class="lesson-num">9</div><div class="lesson-content"><div class="lesson-title">Aula 9 — Layout ideal para Day Trade (salvar)</div><div class="lesson-dur">⏱ 28 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m10a10',event)"><div class="lesson-num">10</div><div class="lesson-content"><div class="lesson-title">Aula 10 — Radar de ativos e screener do Profit</div><div class="lesson-dur">⏱ 25 min</div></div><div class="lesson-play">▶</div></div>
+    </div>
+  </div>
+
+  <div class="mod-row" id="mod-11" onclick="toggleMod('mod-11')">
+    <div class="mod-row-head">
+      <div class="mod-num num-lock">11</div>
+      <div class="mod-row-body">
+        <div class="mod-row-title">Módulo 11 — Psicologia do Trader</div>
+        <div class="mod-row-desc">Controle emocional, vieses, revenge trade, diário e rotina profissional</div>
+        <div class="mod-row-tags"><span class="tag tag-p">Psicologia</span><span class="tag tag-p">8 aulas</span></div>
+      </div>
+      <div class="mod-row-arrow">›</div>
+    </div>
+    <div class="lesson-list">
+      <div class="lesson-item" onclick="openLesson('m11a1',event)"><div class="lesson-num">1</div><div class="lesson-content"><div class="lesson-title">Aula 1 — Por que a psicologia decide seus resultados</div><div class="lesson-dur">⏱ 22 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m11a2',event)"><div class="lesson-num">2</div><div class="lesson-content"><div class="lesson-title">Aula 2 — Os 4 inimigos: Medo, Ganância, Revenge e Overtrading</div><div class="lesson-dur">⏱ 30 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m11a3',event)"><div class="lesson-num">3</div><div class="lesson-content"><div class="lesson-title">Aula 3 — Vieses cognitivos no mercado financeiro</div><div class="lesson-dur">⏱ 25 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m11a4',event)"><div class="lesson-num">4</div><div class="lesson-content"><div class="lesson-title">Aula 4 — Diário de trades: como e por que usar</div><div class="lesson-dur">⏱ 20 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m11a5',event)"><div class="lesson-num">5</div><div class="lesson-content"><div class="lesson-title">Aula 5 — Rotina do trader profissional</div><div class="lesson-dur">⏱ 25 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m11a6',event)"><div class="lesson-num">6</div><div class="lesson-content"><div class="lesson-title">Aula 6 — Como lidar com sequência de losses</div><div class="lesson-dur">⏱ 28 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m11a7',event)"><div class="lesson-num">7</div><div class="lesson-content"><div class="lesson-title">Aula 7 — Mindset de processo vs resultado</div><div class="lesson-dur">⏱ 22 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m11a8',event)"><div class="lesson-num">8</div><div class="lesson-content"><div class="lesson-title">Aula 8 — Técnicas de autorregulação emocional</div><div class="lesson-dur">⏱ 25 min</div></div><div class="lesson-play">▶</div></div>
+    </div>
+  </div>
+
+  <div class="mod-row" id="mod-12" onclick="toggleMod('mod-12')">
+    <div class="mod-row-head">
+      <div class="mod-num num-lock">12</div>
+      <div class="mod-row-body">
+        <div class="mod-row-title">Módulo 12 — Tributação do Day Trader</div>
+        <div class="mod-row-desc">IR 20%, DARF mensal, nota de corretagem, IRPF e compensação de perdas</div>
+        <div class="mod-row-tags"><span class="tag tag-r">Tributação</span><span class="tag tag-r">6 aulas</span></div>
+      </div>
+      <div class="mod-row-arrow">›</div>
+    </div>
+    <div class="lesson-list">
+      <div class="lesson-item" onclick="openLesson('m12a1',event)"><div class="lesson-num">1</div><div class="lesson-content"><div class="lesson-title">Aula 1 — IR no Day Trade: alíquota 20% e regras</div><div class="lesson-dur">⏱ 25 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m12a2',event)"><div class="lesson-num">2</div><div class="lesson-content"><div class="lesson-title">Aula 2 — Cálculo do imposto mensal</div><div class="lesson-dur">⏱ 30 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m12a3',event)"><div class="lesson-num">3</div><div class="lesson-content"><div class="lesson-title">Aula 3 — DARF código 6015: como emitir e pagar</div><div class="lesson-dur">⏱ 22 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m12a4',event)"><div class="lesson-num">4</div><div class="lesson-content"><div class="lesson-title">Aula 4 — Nota de corretagem: como ler e guardar</div><div class="lesson-dur">⏱ 20 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m12a5',event)"><div class="lesson-num">5</div><div class="lesson-content"><div class="lesson-title">Aula 5 — Compensação de perdas entre meses</div><div class="lesson-dur">⏱ 25 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m12a6',event)"><div class="lesson-num">6</div><div class="lesson-content"><div class="lesson-title">Aula 6 — Declaração no IRPF anual: passo a passo</div><div class="lesson-dur">⏱ 30 min</div></div><div class="lesson-play">▶</div></div>
+    </div>
+  </div>
+
+  <div class="mod-row" id="mod-13" onclick="toggleMod('mod-13')">
+    <div class="mod-row-head">
+      <div class="mod-num num-lock">13</div>
+      <div class="mod-row-body">
+        <div class="mod-row-title">Módulo 13 — Análise Fundamentalista</div>
+        <div class="mod-row-desc">DRE, balanço, P/L, EBITDA, ROE, dividendos e impacto no Day Trade</div>
+        <div class="mod-row-tags"><span class="tag tag-o">Fundamentalista</span><span class="tag tag-o">8 aulas</span></div>
+      </div>
+      <div class="mod-row-arrow">›</div>
+    </div>
+    <div class="lesson-list">
+      <div class="lesson-item" onclick="openLesson('m13a1',event)"><div class="lesson-num">1</div><div class="lesson-content"><div class="lesson-title">Aula 1 — Fundamentos: por que importa para o day trader</div><div class="lesson-dur">⏱ 20 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m13a2',event)"><div class="lesson-num">2</div><div class="lesson-content"><div class="lesson-title">Aula 2 — Indicadores: P/L, P/VP, EV/EBITDA</div><div class="lesson-dur">⏱ 30 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m13a3',event)"><div class="lesson-num">3</div><div class="lesson-content"><div class="lesson-title">Aula 3 — DRE e balanço patrimonial simplificado</div><div class="lesson-dur">⏱ 28 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m13a4',event)"><div class="lesson-num">4</div><div class="lesson-content"><div class="lesson-title">Aula 4 — ROE, ROA e eficiência corporativa</div><div class="lesson-dur">⏱ 22 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m13a5',event)"><div class="lesson-num">5</div><div class="lesson-content"><div class="lesson-title">Aula 5 — Como resultados trimestrais movem ações</div><div class="lesson-dur">⏱ 28 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m13a6',event)"><div class="lesson-num">6</div><div class="lesson-content"><div class="lesson-title">Aula 6 — Dividendos e datas ex-dividendo</div><div class="lesson-dur">⏱ 20 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m13a7',event)"><div class="lesson-num">7</div><div class="lesson-content"><div class="lesson-title">Aula 7 — Macroeconômico: SELIC, IPCA e câmbio</div><div class="lesson-dur">⏱ 25 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m13a8',event)"><div class="lesson-num">8</div><div class="lesson-content"><div class="lesson-title">Aula 8 — Combinando fundamentos com a técnica</div><div class="lesson-dur">⏱ 30 min</div></div><div class="lesson-play">▶</div></div>
+    </div>
+  </div>
+
+  <div class="mod-row" id="mod-14" onclick="toggleMod('mod-14')">
+    <div class="mod-row-head">
+      <div class="mod-num num-lock">14</div>
+      <div class="mod-row-body">
+        <div class="mod-row-title">Módulo 14 — Seu Sistema de Trading</div>
+        <div class="mod-row-desc">Backtest, métricas, metas, plano de trading e evolução contínua</div>
+        <div class="mod-row-tags"><span class="tag tag-r">Master</span><span class="tag tag-r">8 aulas</span></div>
+      </div>
+      <div class="mod-row-arrow">›</div>
+    </div>
+    <div class="lesson-list">
+      <div class="lesson-item" onclick="openLesson('m14a1',event)"><div class="lesson-num">1</div><div class="lesson-content"><div class="lesson-title">Aula 1 — O que é um sistema de trading completo</div><div class="lesson-dur">⏱ 25 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m14a2',event)"><div class="lesson-num">2</div><div class="lesson-content"><div class="lesson-title">Aula 2 — Backtest: como testar sua estratégia</div><div class="lesson-dur">⏱ 35 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m14a3',event)"><div class="lesson-num">3</div><div class="lesson-content"><div class="lesson-title">Aula 3 — Métricas: sharpe, drawdown e robustez</div><div class="lesson-dur">⏱ 30 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m14a4',event)"><div class="lesson-num">4</div><div class="lesson-content"><div class="lesson-title">Aula 4 — Definindo metas reais de performance</div><div class="lesson-dur">⏱ 22 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m14a5',event)"><div class="lesson-num">5</div><div class="lesson-content"><div class="lesson-title">Aula 5 — Escrevendo seu plano de trading</div><div class="lesson-dur">⏱ 28 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m14a6',event)"><div class="lesson-num">6</div><div class="lesson-content"><div class="lesson-title">Aula 6 — Review semanal: analisando seus trades</div><div class="lesson-dur">⏱ 25 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m14a7',event)"><div class="lesson-num">7</div><div class="lesson-content"><div class="lesson-title">Aula 7 — Evolução contínua: o trader nunca para de aprender</div><div class="lesson-dur">⏱ 22 min</div></div><div class="lesson-play">▶</div></div>
+      <div class="lesson-item" onclick="openLesson('m14a8',event)"><div class="lesson-num">8</div><div class="lesson-content"><div class="lesson-title">Aula 8 — Próximos passos: sua jornada como trader</div><div class="lesson-dur">⏱ 30 min</div></div><div class="lesson-play">▶</div></div>
+    </div>
+  </div>
+
+</div>
+</div><!-- page-curso -->
+
+<!-- ==============================
+     PAGE: PLATAFORMAS
+     ============================== -->
+<div class="page" id="page-plat">
+<div class="plat-page">
+
+  <div class="plat-hero">
+    <div class="plat-logo" style="color:var(--g)">CLEAR</div>
+    <div class="plat-sub">Corretora Digital XP — Zero Taxa em Ações</div>
+    <div class="step-item"><div class="step-circ">1</div><div><div class="step-t">Acesse clear.com.br</div><div class="step-d">Clique em "Abrir Conta" — 100% digital, sem burocracia. Gratuito.</div></div></div>
+    <div class="step-item"><div class="step-circ">2</div><div><div class="step-t">Documentos e selfie</div><div class="step-d">CPF + RG/CNH frente e verso + selfie segurando o documento. Aprovação em horas.</div></div></div>
+    <div class="step-item"><div class="step-circ">3</div><div><div class="step-t">Depósito via PIX</div><div class="step-d">Transfira qualquer valor instantaneamente. Sem valor mínimo.</div></div></div>
+    <div class="step-item"><div class="step-circ">4</div><div><div class="step-t">Habilitar Day Trade</div><div class="step-d">Acesse "Minha Conta" → "Habilitar Renda Variável" → solicite margem via chat.</div></div></div>
+    <div class="step-item"><div class="step-circ">5</div><div><div class="step-t">Acessar Profit Pro</div><div class="step-d">Solicite no chat da Clear: "Acesso ao Profit Pro". Liberado gratuitamente.</div></div></div>
+    <div class="step-item"><div class="step-circ">6</div><div><div class="step-t">Habilitar Futuros</div><div class="step-d">No chat: solicite "Acesso a Derivativos" para operar WIN e WDO.</div></div></div>
+  </div>
+
+  <div class="sec-head" style="padding-left:0;padding-right:0"><div class="sec-title">Taxas — Clear Corretora</div></div>
+  <div class="ind-table">
+    <div class="ind-row"><span class="ind-name">Ações e ETFs</span><span class="ind-val" style="color:var(--g)">R$ 0,00</span><span class="signal c">Grátis</span></div>
+    <div class="ind-row"><span class="ind-name">Mini Índice (WIN)</span><span class="ind-val">R$ 0,10/lado</span><span class="signal n">Baixo</span></div>
+    <div class="ind-row"><span class="ind-name">Mini Dólar (WDO)</span><span class="ind-val">R$ 0,17/lado</span><span class="signal n">Baixo</span></div>
+    <div class="ind-row"><span class="ind-name">Emolumentos B3</span><span class="ind-val">0,0050%</span><span class="signal n">B3</span></div>
+    <div class="ind-row"><span class="ind-name">Custódia</span><span class="ind-val" style="color:var(--g)">Grátis</span><span class="signal c">Grátis</span></div>
+    <div class="ind-row"><span class="ind-name">TED / PIX</span><span class="ind-val" style="color:var(--g)">Grátis</span><span class="signal c">Grátis</span></div>
+  </div>
+
+  <div class="plat-hero" style="margin-top:16px">
+    <div class="plat-logo" style="color:var(--b)">PROFIT PRO</div>
+    <div class="plat-sub">Neológica — Plataforma Padrão dos Profissionais</div>
+    <div class="step-item"><div class="step-circ">1</div><div><div class="step-t">Download em neologica.com.br</div><div class="step-d">Produtos → Profit Pro. Instale no Windows 10/11 (min. 8GB RAM, SSD recomendado).</div></div></div>
+    <div class="step-item"><div class="step-circ">2</div><div><div class="step-t">Conectar à corretora</div><div class="step-d">Configurações → Conexão → Selecione Clear → Login com dados da Clear.</div></div></div>
+    <div class="step-item"><div class="step-circ">3</div><div><div class="step-t">Configurar gráfico</div><div class="step-d">Botão direito no gráfico → Indicadores → Adicione: VWAP, EMA21, EMA72, Volume.</div></div></div>
+    <div class="step-item"><div class="step-circ">4</div><div><div class="step-t">Layout profissional</div><div class="step-d">Esq: Book L2 | Centro: Gráfico 5m+15m | Dir: Times&Trades | Baixo: Boleta + P&L</div></div></div>
+    <div class="step-item"><div class="step-circ">5</div><div><div class="step-t">Configurar atalhos (F1–F4)</div><div class="step-d">Ferramentas → Atalhos de Teclado. Configure F1=Compra, F2=Venda, F4=Zerar.</div></div></div>
+    <div class="step-item"><div class="step-circ">6</div><div><div class="step-t">Salvar layout</div><div class="step-d">Ctrl+S para salvar após configurar. Nunca perca sua configuração.</div></div></div>
+  </div>
+
+  <div class="sec-head" style="padding-left:0;padding-right:0"><div class="sec-title">Atalhos de Teclado — Profit Pro</div></div>
+  <div class="hk-grid">
+    <div class="hk"><div class="hk-key">F1</div><div class="hk-d">Boleta Compra</div></div>
+    <div class="hk"><div class="hk-key">F2</div><div class="hk-d">Boleta Venda</div></div>
+    <div class="hk"><div class="hk-key">F3</div><div class="hk-d">Cancelar Ordens</div></div>
+    <div class="hk"><div class="hk-key">F4</div><div class="hk-d">Zerar Posição</div></div>
+    <div class="hk"><div class="hk-key">Space</div><div class="hk-d">Confirmar Ordem</div></div>
+    <div class="hk"><div class="hk-key">Ctrl+B</div><div class="hk-d">Book Ofertas</div></div>
+    <div class="hk"><div class="hk-key">Ctrl+T</div><div class="hk-d">Times & Trades</div></div>
+    <div class="hk"><div class="hk-key">Ctrl+G</div><div class="hk-d">Novo Gráfico</div></div>
+    <div class="hk"><div class="hk-key">Ctrl+S</div><div class="hk-d">Salvar Layout</div></div>
+    <div class="hk"><div class="hk-key">Tab</div><div class="hk-d">Trocar Ativo</div></div>
+  </div>
+
+</div>
+</div><!-- page-plat -->
+
+</div><!-- main -->
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <button class="nav-item active" id="nav-home" onclick="switchPage('home')">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Início
+  </button>
+  <button class="nav-item" id="nav-chart" onclick="switchPage('chart')">
+    <svg viewBox="0 0 24 24"><polyline points="22 12 18 8 13 13 8 8 2 14"/></svg>Gráficos
+  </button>
+  <button class="nav-item" id="nav-mentor" onclick="switchPage('mentor')">
+    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Mentor IA
+  </button>
+  <button class="nav-item" id="nav-curso" onclick="switchPage('curso')">
+    <svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>Curso
+  </button>
+  <button class="nav-item" id="nav-plat" onclick="switchPage('plat')">
+    <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Plataformas
+  </button>
+</div>
+
+<!-- MODAL -->
+<div class="modal-back" id="modal-back" onclick="closeModal(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title" id="modal-title">Aula</div>
+      <button class="modal-close" onclick="forceClose()">✕</button>
+    </div>
+    <div class="modal-meta" id="modal-meta"></div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// NAVIGATION
+// ============================================================
+let chartReady = false;
+
+function switchPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  const nav = document.getElementById('nav-' + id);
+  if(nav) nav.classList.add('active');
+  if(id === 'chart' && !chartReady) {
+    chartReady = true;
+    setTimeout(() => buildTVWidget(curTVSymbol, curTF), 200);
+  }
+}
+
+// ============================================================
+// MODULE TOGGLE — expand/collapse lesson list
+// ============================================================
+function toggleMod(id) {
+  const row = document.getElementById(id);
+  const isOpen = row.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.mod-row.open').forEach(r => r.classList.remove('open'));
+  // Open clicked if it was closed
+  if(!isOpen) row.classList.add('open');
+}
+
+// ============================================================
+// CHART — TradingView Widget Oficial
+// Funciona em HTTPS (GitHub Pages, Lovable, Netlify, etc.)
+// ============================================================
+let curSymbol = 'WIN';
+let curTVSymbol = 'BMFBOVESPA:WIN1!';
+let curTF = '5';
+
+function buildTVWidget(tvSymbol, interval) {
+  const container = document.getElementById('tv-widget-container');
+  const loading   = document.getElementById('tv-loading');
+
+  loading.style.display = 'flex';
+  container.innerHTML = '';
+
+  // Div obrigatória que o widget vai substituir
+  const widgetDiv = document.createElement('div');
+  widgetDiv.id = 'tv_chart_widget';
+  widgetDiv.style.width  = '100%';
+  widgetDiv.style.height = '450px';
+  container.appendChild(widgetDiv);
+
+  // Config do widget oficial TradingView
+  const config = {
+    autosize:           true,
+    symbol:             tvSymbol,
+    interval:           interval,
+    timezone:           'America/Sao_Paulo',
+    theme:              'dark',
+    style:              '1',
+    locale:             'br',
+    toolbar_bg:         '#0a0f16',
+    enable_publishing:  false,
+    hide_top_toolbar:   false,
+    hide_side_toolbar:  false,
+    allow_symbol_change:false,
+    save_image:         false,
+    container_id:       'tv_chart_widget',
+    studies: [
+      'RSI@tv-basicstudies',
+      'VWAP@tv-basicstudies',
+      'Volume@tv-basicstudies',
+      'MASimple@tv-basicstudies'
+    ],
+    overrides: {
+      'paneProperties.background':           '#0e1520',
+      'paneProperties.backgroundType':       'solid',
+      'paneProperties.vertGridProperties.color': '#1a2535',
+      'paneProperties.horzGridProperties.color': '#1a2535',
+      'scalesProperties.textColor':          '#7a95b0',
+      'mainSeriesProperties.candleStyle.upColor':        '#00c896',
+      'mainSeriesProperties.candleStyle.downColor':      '#ff453a',
+      'mainSeriesProperties.candleStyle.borderUpColor':  '#00c896',
+      'mainSeriesProperties.candleStyle.borderDownColor':'#ff453a',
+      'mainSeriesProperties.candleStyle.wickUpColor':    '#00c896',
+      'mainSeriesProperties.candleStyle.wickDownColor':  '#ff453a'
+    }
+  };
+
+  // Remove script anterior se existir
+  const old = document.getElementById('tv-script');
+  if (old) old.remove();
+
+  if (typeof TradingView !== 'undefined') {
+    // Biblioteca já carregada — só cria o widget
+    new TradingView.widget(config);
+    setTimeout(() => { loading.style.display = 'none'; }, 1800);
+  } else {
+    // Carrega a biblioteca e cria o widget
+    const script   = document.createElement('script');
+    script.id      = 'tv-script';
+    script.src     = 'https://s3.tradingview.com/tv.js';
+    script.async   = true;
+    script.onload  = () => {
+      new TradingView.widget(config);
+      setTimeout(() => { loading.style.display = 'none'; }, 1800);
+    };
+    script.onerror = () => {
+      loading.innerHTML = '<span style="color:var(--r)">⚠️ Sem conexão com TradingView.<br>Verifique sua internet.</span>';
+    };
+    document.head.appendChild(script);
+  }
+}
+
+function loadChart(btn, symbol, sym, name, price, chg, dir) {
+  document.querySelectorAll('.atab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('ch-sym').textContent = sym;
+  document.getElementById('ch-name').textContent = name;
+  document.getElementById('ch-price').textContent = price;
+  const chgEl = document.getElementById('ch-chg');
+  chgEl.textContent = (dir === 'up' ? '▲ +' : '▼ ') + chg;
+  chgEl.className = 'ch-chg ' + dir;
+  curSymbol = sym;
+  curTVSymbol = symbol;
+  buildTVWidget(symbol, curTF);
+  updateAnalysis(sym, dir);
+  updateTradeEx(sym);
+}
+
+function setTF(btn, tf) {
+  document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  curTF = tf;
+  buildTVWidget(curTVSymbol, tf);
+}
+
+// Analysis texts
+const analysisDB = {
+  WIN: {
+    trend: '<strong>Mini Índice</strong> em tendência de alta intraday. Preço mantendo-se acima do VWAP e das EMAs. Ibovespa no viés comprador com volume acima da média.',
+    levels: '<strong>Suporte S1:</strong> 130.200 pts (mínima da sessão)<br><strong>Suporte S2:</strong> 129.800 pts (nível psicológico)<br><strong>Resistência R1:</strong> 131.000 pts (topo da manhã)<br><strong>Resistência R2:</strong> 131.500 pts (máxima semanal)<br><strong>VWAP do dia:</strong> ~130.500 pts',
+    setup: '<strong>Setup ORB 15min:</strong> Entrada stop em 131.020 pts, stop em 130.800 pts (220 pts = R$ 44/contrato), alvo em 131.500 pts (480 pts = R$ 96). RR 2,18:1. Aguardar rompimento com volume mínimo de 150% da média.'
+  },
+  WDO: {
+    trend: '<strong>Mini Dólar</strong> sob pressão vendedora. Dollar Index fraco no exterior. Atenção ao horário NY (14h30 BR) para aumento de volatilidade.',
+    levels: '<strong>Suporte:</strong> 5.020 pts | <strong>Resistência:</strong> 5.050 pts | <strong>VWAP:</strong> ~5.034 pts',
+    setup: '<strong>Venda no Repique:</strong> Aguardar retorno ao VWAP (5.034) sem força compradora. Venda em 5.033, stop 5.045 (120 pts = R$ 120/contrato), alvo 5.010. RR 1,9:1.'
+  },
+  PETR4: {
+    trend: '<strong>PETR4</strong> em tendência de alta no 5min. Acima da EMA21 e EMA72. Acompanha WTI (Petróleo) e câmbio. Viés comprador no curto prazo.',
+    levels: '<strong>Suporte S1:</strong> R$ 37,80 (EMA21 do 15min)<br><strong>Suporte S2:</strong> R$ 37,40 (mínima anterior)<br><strong>Resistência R1:</strong> R$ 38,90 (topo do dia)<br><strong>VWAP:</strong> ~R$ 38,18',
+    setup: '<strong>Pullback para EMA21:</strong> Aguardar recuo a R$ 37,80 com candle martelo. Entrada R$ 37,85, stop R$ 37,60 (−R$ 25/100 ações), alvo R$ 38,90 (+R$ 105). RR 4,2:1.'
+  },
+  VALE3: {
+    trend: '<strong>VALE3</strong> lateral entre R$ 62,50 e R$ 64,20. Aguardar definição. Correlação com Minério de Ferro e China.',
+    levels: '<strong>Suporte:</strong> R$ 62,50 | <strong>Resistência:</strong> R$ 64,20 | <strong>VWAP:</strong> ~R$ 63,30',
+    setup: '<strong>Range Trade:</strong> Compra em R$ 62,60, stop R$ 62,20, alvo R$ 63,80. OU venda em R$ 64,10, stop R$ 64,50, alvo R$ 62,80.'
+  }
+};
+
+function updateAnalysis(sym, dir) {
+  const a = analysisDB[sym] || {
+    trend: `<strong>${sym}</strong> — Analise o gráfico acima. Identifique a tendência (topos e fundos), o posicionamento relativo ao VWAP e às EMAs para determinar o viés do dia.`,
+    levels: 'Observe os <strong>topos e fundos anteriores</strong> no gráfico TradingView para identificar suportes e resistências relevantes. Use o botão de linha horizontal para marcar os níveis.',
+    setup: 'Com o contexto do gráfico ao vivo, identifique: 1) A tendência dominante 2) O próximo nível de suporte/resistência 3) Um candle de reversão nessa região 4) Confirme com volume.'
+  };
+  document.getElementById('ab-trend').innerHTML = a.trend;
+  document.getElementById('ab-levels').innerHTML = a.levels;
+  document.getElementById('ab-setup').innerHTML = a.setup;
+}
+
+function updateTradeEx(sym) {
+  const isFut = ['WIN','WDO','ISP','CCM','BGI','SFI','MIL'].includes(sym);
+  document.getElementById('te-head').textContent = `Setup: Pullback com Média — ${sym}`;
+  if(isFut) {
+    document.getElementById('te-ent').textContent = sym === 'WDO' ? '5.033 pts' : '130.500 pts';
+    document.getElementById('te-stop').textContent = sym === 'WDO' ? '5.021 pts (−R$ 120/ctr)' : '130.300 pts (−R$ 40/ctr)';
+    document.getElementById('te-a1').textContent = sym === 'WDO' ? '5.010 pts (+R$ 230)' : '130.900 pts (+R$ 80)';
+    document.getElementById('te-a2').textContent = sym === 'WDO' ? '4.995 pts (+R$ 380)' : '131.300 pts (+R$ 160)';
+  } else {
+    document.getElementById('te-ent').textContent = 'No toque na EMA21';
+    document.getElementById('te-stop').textContent = 'Mínima do candle de sinal';
+    document.getElementById('te-a1').textContent = 'Próxima resistência (+R:R 2:1)';
+    document.getElementById('te-a2').textContent = 'Alvo 2 (R:R 3,5:1)';
+  }
+}
+
+// ============================================================
+// MENTOR IA
+// ============================================================
+// ============================================================
+// MENTOR IA — Claude API (IA real, não pré-programado)
+// ============================================================
+let chatHistory = [];
+let isSending = false;
+
+const SYSTEM_PROMPT = `Você é o MAX, professor e mentor especialista em Day Trade no mercado brasileiro (B3). Você tem 15 anos de experiência operando minicontratos (WIN e WDO), ações e outros ativos. Você ensinou mais de 3.000 alunos a operar de forma profissional.
+
+SEU PERFIL:
+- Professor paciente, didático e apaixonado por mercado
+- Explica conceitos complexos de forma simples, com exemplos reais da B3
+- Usa linguagem informal mas precisa — como um professor/amigo experiente
+- Sempre contextualiza com exemplos práticos: valores em reais, pontos do Ibovespa, ativos reais
+- Faz perguntas para entender o nível do aluno quando necessário
+- Corrige erros de conceito gentilmente mas com firmeza
+- Celebra quando o aluno demonstra entendimento
+
+SEU CONHECIMENTO COBRE:
+- Análise técnica completa (candlestick, padrões, suporte/resistência, tendências)
+- Indicadores: VWAP, EMA21/72, MACD, RSI, Bollinger, Volume, ADX, Estocástico
+- Mini contratos: WIN (R$0,20/ponto), WDO (R$10/ponto), especificações, estratégias
+- Gestão de risco: regra dos 2%, position sizing, stop loss, RR
+- Setups: ORB, pullback, breakout, reversão, scalping, bounce no VWAP
+- Plataformas: Profit Pro, Clear Corretora, configurações, atalhos
+- Psicologia do trader: disciplina, controle emocional, diário de trades
+- Tributação: IR 20%, DARF 6015, compensação de perdas
+- Horários B3, book de ofertas, Times & Trades, tape reading
+- Análise fundamentalista básica e macroeconômica
+
+FORMATO DAS RESPOSTAS:
+- Use emojis para tornar mais visual (📊 ✅ ⚠️ 💡 📈 📉 🎯 etc)
+- Use **negrito** para destacar termos importantes  
+- Use exemplos com números reais quando possível
+- Quando der exemplos de operação, mostre: entrada, stop, alvo, RR
+- Máximo 3-4 parágrafos por resposta — seja didático mas conciso
+- Pergunte se o aluno quer aprofundar algum ponto
+
+Responda SEMPRE em português brasileiro.`;
+
+async function sendToAI(userMessage) {
+  chatHistory.push({ role: 'user', content: userMessage });
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: SYSTEM_PROMPT,
+        messages: chatHistory
+      })
+    });
+
+    const data = await response.json();
+    const reply = data.content?.[0]?.text || 'Erro ao obter resposta. Tente novamente.';
+    chatHistory.push({ role: 'assistant', content: reply });
+    return reply;
+  } catch (err) {
+    chatHistory.pop(); // remove failed user message
+    return '⚠️ Erro de conexão. Verifique sua internet e tente novamente.';
+  }
+}
+
+function markdownToHtml(text) {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/`(.*?)`/g, '<code style="background:rgba(0,200,150,.1);padding:1px 5px;border-radius:3px;font-family:var(--mono);font-size:12px">$1</code>')
+    .replace(/^### (.*)/gm, '<strong style="font-size:14px;color:var(--text)">$1</strong>')
+    .replace(/^## (.*)/gm, '<strong style="font-size:15px;color:var(--text)">$1</strong>')
+    .replace(/^- (.*)/gm, '• $1')
+    .replace(/\n\n/g, '<br><br>')
+    .replace(/\n/g, '<br>');
+}
+
+async function ask(q) {
+  if (isSending) return;
+  isSending = true;
+  addUser(q);
+  addTyping();
+  const reply = await sendToAI(q);
+  rmTyping();
+  addBot(markdownToHtml(reply));
+  isSending = false;
+}
+
+async function sendMsg() {
+  const inp = document.getElementById('chat-inp');
+  const q = inp.value.trim();
+  if (!q || isSending) return;
+  inp.value = '';
+  await ask(q);
+}
+
+function addUser(txt) {
+  const c = document.getElementById('chat-msgs');
+  const d = document.createElement('div');
+  d.className = 'msg user';
+  d.innerHTML = `<div class="bubble">${txt}</div>`;
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
+}
+
+function addBot(html) {
+  const c = document.getElementById('chat-msgs');
+  const d = document.createElement('div');
+  d.className = 'msg bot';
+  d.innerHTML = `<div class="msg-sender">MAX — IA MENTOR</div><div class="bubble">${html}</div>`;
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
+}
+
+function addTyping() {
+  const c = document.getElementById('chat-msgs');
+  const d = document.createElement('div');
+  d.className = 'msg bot';
+  d.id = 'typing-msg';
+  d.innerHTML = `<div class="msg-sender">MAX</div><div class="typing"><div class="td"></div><div class="td"></div><div class="td"></div></div>`;
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
+}
+
+function rmTyping() {
+  const el = document.getElementById('typing-msg');
+  if (el) el.remove();
+}
+
+// ============================================================
+// LESSON MODAL — full content per lesson
+// ============================================================
+const lessonContent = {
+  // MODULE 1
+  m1a1: { title:'O que é a B3 e como funciona', meta:['Módulo 1','Aula 1','18 min'], body:`<h3>B3 — Brasil, Bolsa, Balcão</h3><p>A B3 é a única bolsa de valores do Brasil, formada em 2017 pela fusão entre BM&FBovespa e Cetip. É a 4ª maior bolsa das Américas em capitalização de mercado, com mais de R$ 4 trilhões.</p><div class="hl">🏛️ <strong>Função da B3:</strong> Ser a infraestrutura onde compradores e vendedores de ativos financeiros se encontram de forma organizada, regulada e segura.</div><h3>Como funciona na prática</h3><p>Quando você envia uma ordem de compra de PETR4, ela chega ao sistema da B3 via sua corretora. O sistema faz o "casamento" (matching) entre sua ordem de compra com uma ordem de venda disponível. A negociação é liquidada em D+2 para ações.</p><h3>Reguladores do mercado</h3><p><strong>CVM (Comissão de Valores Mobiliários):</strong> Regula e fiscaliza o mercado de capitais.<br><strong>Banco Central do Brasil:</strong> Regula o mercado de câmbio e derivativos financeiros.<br><strong>B3:</strong> Autorregula e fiscaliza as corretoras credenciadas.</p><div class="ex-table"><div class="ex-head">Dados da B3 — 2024</div><div class="ex-row"><span class="ex-l">Volume médio diário</span><span class="ex-v">R$ 25–35 bilhões</span></div><div class="ex-row"><span class="ex-l">Empresas listadas</span><span class="ex-v">~450 empresas</span></div><div class="ex-row"><span class="ex-l">Pessoas físicas</span><span class="ex-v">+5 milhões de investidores</span></div><div class="ex-row"><span class="ex-l">Contratos futuros/dia</span><span class="ex-v">+6 milhões (WIN+WDO)</span></div></div>` },
+
+  m1a2: { title:'Tipos de Ativos: Ações, Futuros, ETFs, FIIs', meta:['Módulo 1','Aula 2','22 min'], body:`<h3>Ações</h3><p><strong>Ordinárias (ON) — sufixo 3:</strong> Direito a voto nas assembleias. Ex: VALE3, BBAS3, WEGE3.<br><strong>Preferenciais (PN) — sufixo 4:</strong> Prioridade em dividendos, geralmente mais líquidas para Day Trade. Ex: PETR4, ITUB4, BBDC4.</p><h3>Mini Contratos Futuros</h3><p><strong>WIN (Mini Índice):</strong> Contrato futuro do Ibovespa. 1 ponto = R$ 0,20. Favorito do Day Trade.<br><strong>WDO (Mini Dólar):</strong> Contrato futuro do dólar. 1 ponto = R$ 10,00. Alta volatilidade.</p><h3>ETFs — Exchange Traded Funds</h3><p>Fundos que replicam índices, negociados como ações. BOVA11 (Ibovespa), IVVB11 (S&P500), SMAL11 (Small Caps), GOLD11 (Ouro).</p><h3>FIIs — Fundos Imobiliários</h3><p>Sufixo 11. Investem em imóveis ou CRIs. Pagam dividendos mensais. MXRF11, HGLG11, KNRI11.</p><h3>BDRs</h3><p>Brazilian Depositary Receipts — ações internacionais negociadas na B3. AAPL34 (Apple), MSFT34 (Microsoft), TSLA34 (Tesla), NVDC34 (Nvidia).</p><div class="warn">⚠️ Para Day Trade, prefira ativos com <strong>alta liquidez</strong>: WIN, WDO, PETR4, VALE3, ITUB4, IBOV.</div>` },
+
+  m1a3: { title:'Horários do Pregão e Sessões', meta:['Módulo 1','Aula 3','15 min'], body:`<div class="hl"><strong>Horários completos B3 2024/2025:</strong><br><br>9h00 — Futuros abrem (WIN, WDO)<br>9h45 — Pré-abertura ações (leilão)<br>10h00 — Abertura oficial ações<br>10h00–10h30 — Alta volatilidade ORB<br>11h00–12h30 — Mercado equilibrado<br>12h30–13h00 — Menor volume (almoço)<br>13h00–13h30 — Dados econômicos BR<br>13h30 — Dados EUA pré-market (volatilidade!)<br>14h30 — Abertura NYSE e Nasdaq<br>14h30–15h30 — Correlação BR × EUA alta<br>17h25 — Início do leilão de fechamento<br>17h55 — Encerramento do pregão<br>18h00 — Futuros encerram<br>18h30 — After Market (volume muito baixo)</div><h3>Melhores Horários para Day Trade</h3><p><strong>Iniciante:</strong> 10h30–12h30 (mercado mais previsível, tendências formadas)<br><strong>Intermediário:</strong> 10h00–10h30 (ORB) + 14h30–15h30 (correlação americana)<br><strong>Avançado:</strong> Abertura (10h00) para capturar o gap de abertura</p><div class="warn">⚠️ Evite operar nos últimos 15 minutos (17h40–17h55) — leilão de fechamento com comportamento atípico.</div>` },
+
+  m1a4: { title:'Participantes do Mercado', meta:['Módulo 1','Aula 4','20 min'], body:`<h3>Quem move o mercado?</h3><p>Entender os participantes é fundamental para saber de qual lado estar. O mercado é uma guerra entre diferentes tipos de players.</p><div class="ex-table"><div class="ex-head">Participantes e seus perfis</div><div class="ex-row"><span class="ex-l">Institucionais</span><span class="ex-v">Fundos, bancos, seguradoras — MOVEM o mercado</span></div><div class="ex-row"><span class="ex-l">Estrangeiros</span><span class="ex-v">Grande influência no Ibovespa (~50% do volume)</span></div><div class="ex-row"><span class="ex-l">Pessoa Física</span><span class="ex-v">~30% do volume — deve seguir o fluxo</span></div><div class="ex-row"><span class="ex-l">Market Makers</span><span class="ex-v">Fornecem liquidez, ganham no spread</span></div><div class="ex-row"><span class="ex-l">HFT (algoritmos)</span><span class="ex-v">Alta frequência, latência mínima</span></div></div><h3>A Regra de Ouro</h3><div class="hl">💡 <strong>Siga o institucional, não lute contra ele.</strong> Quando grandes fundos compram, o preço sobe. Quando vendem, cai. Seu trabalho é identificar o fluxo e aproveitar a direção.</div><p>O Times & Trades (Tape) revela grandes lotes sendo negociados — isso é o institucional entrando ou saindo. Price Action e leitura de fluxo são as ferramentas para identificar isso.</p>` },
+
+  m1a5: { title:'Tipos de Ordem: Mercado, Limitada, Stop', meta:['Módulo 1','Aula 5','25 min'], body:`<h3>Ordem a Mercado</h3><p>Executa imediatamente ao melhor preço disponível. <strong>Garantia de execução, sem garantia de preço.</strong> Use em mercados muito líquidos (WIN, WDO) quando precisa entrar/sair rápido.</p><h3>Ordem Limitada</h3><p>Você define o preço máximo de compra ou mínimo de venda. <strong>Garantia de preço, sem garantia de execução.</strong> Se o preço não atingir seu limite, a ordem não executa. Mais usada no Day Trade de ações.</p><h3>Ordem Stop</h3><p>Gatilho + preço de execução. Quando o preço atinge o gatilho, a ordem é enviada. Usada principalmente para <strong>stop loss automático</strong>. No Profit Pro: F1/F2 → Stop.</p><h3>Ordem Stop Limit</h3><p>Mais segura que o stop simples: quando o gatilho é atingido, envia ordem limitada. Evita execução a preço muito diferente do pretendido (slippage).</p><div class="hl">🎯 <strong>Para Day Trade no WIN:</strong> Use Stop Limit para entradas em rompimento e Stop para saída (stop loss). No Profit Pro configure F4 para zerar posição a mercado.</div><div class="ex-table"><div class="ex-head">Comparativo de Ordens</div><div class="ex-row"><span class="ex-l">A Mercado</span><span class="ex-v g">100% execução, preço variável</span></div><div class="ex-row"><span class="ex-l">Limitada</span><span class="ex-v">Preço fixo, execução incerta</span></div><div class="ex-row"><span class="ex-l">Stop</span><span class="ex-v">Ativa no gatilho, executa a mercado</span></div><div class="ex-row"><span class="ex-l">Stop Limit</span><span class="ex-v">Ativa no gatilho, executa com limite</span></div></div>` },
+
+  m1a6: { title:'Como Funciona o Book de Ofertas', meta:['Módulo 1','Aula 6','20 min'], body:`<h3>O que é o Book?</h3><p>O Book de Ofertas (ou Nível II) mostra todas as ordens de compra e venda pendentes no mercado. É a "fila" de compradores e vendedores esperando execução.</p><div class="hl"><strong>Estrutura do Book:</strong><br>• Coluna ESQUERDA (bids): ordens de compra pendentes, ordem decrescente de preço<br>• Coluna DIREITA (asks): ordens de venda pendentes, ordem crescente de preço<br>• SPREAD: diferença entre o melhor bid e o melhor ask</div><h3>Sinais Importantes no Book</h3><p><strong>Parede de Compra:</strong> Grande volume concentrado em um nível de preço no bid. Suporte próximo — mercado vai se apoiar nessa região. Difícil cair.<br><strong>Parede de Venda:</strong> Grande volume no ask. Resistência próxima — mercado terá dificuldade de subir.<br><strong>Retirada da Parede:</strong> Atenção! Quando uma grande ordem some do book, pode ser manipulação (icebergs) ou o player saiu.</p><div class="warn">⚠️ Nunca opere apenas pelo book. É uma das ferramentas — combine sempre com gráfico e tape.</div>` },
+
+  m1a7: { title:'Liquidez e Spread', meta:['Módulo 1','Aula 7','18 min'], body:`<h3>Liquidez — O Que É e Por Que Importa</h3><p>Liquidez é a <strong>facilidade de comprar e vender um ativo sem impactar significativamente seu preço</strong>. Ativos líquidos têm muitos compradores e vendedores sempre presentes.</p><div class="hl"><strong>Ativos mais líquidos na B3 para Day Trade:</strong><br>• WIN (Mini Índice): liquidez altíssima<br>• WDO (Mini Dólar): liquidez muito alta<br>• PETR4, VALE3, ITUB4: liquidez excelente em ações</div><h3>Spread</h3><p>É a diferença entre o melhor preço de venda (ask) e o melhor preço de compra (bid). Representa um custo implícito da operação.</p><div class="ex-table"><div class="ex-head">Spread — Exemplos Práticos</div><div class="ex-row"><span class="ex-l">WIN (Mini Índice)</span><span class="ex-v g">5 pts = R$ 1,00</span></div><div class="ex-row"><span class="ex-l">PETR4</span><span class="ex-v g">R$ 0,01 = mínimo</span></div><div class="ex-row"><span class="ex-l">Ação pouco líquida</span><span class="ex-v r">R$ 0,10+ = alto custo</span></div></div><div class="warn">⚠️ Nunca opere ações com volume diário abaixo de R$ 5 milhões. O spread alto destruirá seu resultado.</div>` },
+
+  m1a8: { title:'Day Trade vs Swing vs Position', meta:['Módulo 1','Aula 8','22 min'], body:`<h3>Três Formas de Operar</h3><div class="ex-table"><div class="ex-head">Comparativo de Modalidades</div><div class="ex-row"><span class="ex-l">Day Trade</span><span class="ex-v">Abre e fecha no mesmo dia. IR: 20%</span></div><div class="ex-row"><span class="ex-l">Swing Trade</span><span class="ex-v">2 a 15 dias. IR: 15% acima R$ 20k/mês</span></div><div class="ex-row"><span class="ex-l">Position Trade</span><span class="ex-v">Meses/anos. Isenção até R$ 20k/mês</span></div></div><h3>Por que Day Trade?</h3><div class="hl">✓ Sem risco overnight (gap de abertura)<br>✓ Alta liquidez e oportunidades diárias<br>✓ Resultado conhecido todo dia<br>✓ Alavancagem maior disponível</div><div class="warn">⚠️ Day Trade é a modalidade mais difícil. Requer capital, disciplina, estudo e tempo de tela. Nunca abandone o emprego para fazer Day Trade antes de ter consistência comprovada por pelo menos 6 meses.</div><h3>Tributação Comparativa</h3><p><strong>Day Trade:</strong> 20% sobre lucro líquido MENSAL. Sem isenção. IRRF de 1%/dia retido pela corretora.<br><strong>Swing/Position (ações):</strong> 15% sobre lucro acima de R$ 20.000 por mês. Ações ordinárias têm isenção.<br><strong>Futuros (Swing):</strong> 15% sempre, sem isenção.</p>` },
+
+  // MODULE 2 key lessons
+  m2a1: { title:'Os 3 Pilares da Análise Técnica', meta:['Módulo 2','Aula 1','20 min'], body:`<h3>Premissa 1 — O Preço Desconta Tudo</h3><p>O preço de mercado já reflete TODAS as informações disponíveis: notícias, fundamentos, expectativas, sentimento. Não é necessário analisar balanços para operar — o gráfico já conta a história.</p><h3>Premissa 2 — Preços se Movem em Tendências</h3><p>Uma vez iniciada, uma tendência tende a continuar até haver sinais claros de reversão. A tarefa do trader é identificar a tendência e operar a favor dela.</p><div class="hl">💡 <strong>"A tendência é sua amiga até o fim dela."</strong></div><h3>Premissa 3 — A História se Repete</h3><p>Padrões de comportamento humano (medo, ganância, esperança) se repetem nos gráficos. Formações como Cabeça e Ombros, Fundos Duplos, Triângulos, ocorreram nos anos 1920 e ocorrem hoje da mesma forma.</p><div class="info">📊 A Análise Técnica não é uma ciência exata — é uma ciência probabilística. Nenhum padrão funciona 100% das vezes. A gestão de risco compensa os erros inevitáveis.</div>` },
+
+  m2a2: { title:'Tendências — Alta, Baixa e Lateralização', meta:['Módulo 2','Aula 2','25 min'], body:`<h3>Tendência de Alta (Uptrend)</h3><p>Série de <strong>topos e fundos ASCENDENTES</strong>. Cada topo é mais alto que o anterior, cada fundo é mais alto que o fundo anterior. O mercado está comprando na força e comprando nos recuos.</p><div class="hl">✓ Estratégia: buscar COMPRAS nos pullbacks (fundos dentro da tendência)<br>✓ Nunca vender contra uma tendência forte de alta</div><h3>Tendência de Baixa (Downtrend)</h3><p>Série de <strong>topos e fundos DESCENDENTES</strong>. Cada topo é mais baixo, cada fundo é mais baixo. Para day traders: buscar vendas nos repiques (nas corretoras com disponibilidade de venda a descoberto ou operando futuros).</p><h3>Lateralização (Range/Consolidação)</h3><p>Preço oscilando entre suporte e resistência horizontais sem direção clara. Estratégia range: <strong>compra no suporte, venda na resistência</strong>.</p><div class="warn">⚠️ Cuidado: consolidações geralmente precedem movimentos explosivos (breakouts). Fique atento ao volume — quando comprime dentro do range e explode, pode ser um breakout significativo.</div><div class="ex-table"><div class="ex-head">Como identificar a tendência</div><div class="ex-row"><span class="ex-l">Alta</span><span class="ex-v g">Topos e fundos crescentes</span></div><div class="ex-row"><span class="ex-l">Baixa</span><span class="ex-v r">Topos e fundos decrescentes</span></div><div class="ex-row"><span class="ex-l">Lateral</span><span class="ex-v">Range horizontal definido</span></div></div>` },
+
+  m2a3: { title:'Suporte e Resistência — Identificação e Uso', meta:['Módulo 2','Aula 3','30 min'], body:`<h3>Suporte</h3><p>Região de preço onde compradores historicamente superam vendedores. O ativo "apoiou" nessa região e reverteu para cima em pelo menos duas ocasiões anteriores.</p><h3>Resistência</h3><p>Região onde vendedores dominam. O ativo "bateu" e reverteu para baixo em pelo menos duas ocasiões.</p><h3>Como Identificar nos Gráficos</h3><div class="hl">1. Observe topos e fundos anteriores (mais importantes)<br>2. Níveis psicológicos: R$ 40,00; R$ 50,00; 130.000 pts<br>3. Máximas e mínimas de períodos anteriores (semanal, mensal)<br>4. VWAP do dia (dinâmico)<br>5. EMAs 21 e 72 (suportes/resistências dinâmicos)</div><h3>A Lei do Flip</h3><p>Quando um suporte é <strong>rompido com força</strong>, ele se torna resistência. Quando uma resistência é rompida, torna-se suporte. Esse conceito é crucial para definir alvos e stopas.</p><div class="ex-table"><div class="ex-head">Classificação de Suportes/Resistências</div><div class="ex-row"><span class="ex-l">Testado 1x</span><span class="ex-v">Fraco — menos confiável</span></div><div class="ex-row"><span class="ex-l">Testado 2–3x</span><span class="ex-v g">Forte — mais confiável</span></div><div class="ex-row"><span class="ex-l">Testado 4x+</span><span class="ex-v r">Muito testado — maior chance de rompimento</span></div></div>` },
+
+  m2a4: { title:'Linhas de Tendência e Canais', meta:['Módulo 2','Aula 4','22 min'], body:`<h3>O que é uma Linha de Tendência</h3><p>Uma linha reta que conecta dois ou mais topos (LTB — Linha de Tendência de Baixa) ou dois ou mais fundos (LTA — Linha de Tendência de Alta). Funciona como suporte e resistência dinâmico.</p><div class="hl">📏 <strong>Regra dos 3 Pontos:</strong> Uma linha de tendência é válida quando testada e respeitada em pelo menos 3 pontos distintos. Quanto mais toques, mais poderosa.</div><h3>Canal de Preços</h3><p>Formado por duas linhas de tendência paralelas — uma conectando os fundos (suporte) e outra os topos (resistência). O preço oscila dentro desse corredor.</p><ul><li><strong>Canal de Alta:</strong> inclinado para cima — compra no suporte do canal, alvo na resistência</li><li><strong>Canal de Baixa:</strong> inclinado para baixo — venda nos repiques até a resistência</li><li><strong>Canal Lateral (Range):</strong> horizontal — compra no suporte, venda na resistência</li></ul><h3>Rompimento do Canal</h3><p>Quando o preço rompe a linha de tendência com volume acima da média, é sinal de reversão ou aceleração. O ex-suporte vira resistência (Lei do Flip).</p><div class="warn">⚠️ Evite traçar linhas forçadas. Uma boa linha de tendência se "encaixa" naturalmente no gráfico — se você precisar distorcê-la para conectar os pontos, ela provavelmente não é válida.</div><div class="ex-table"><div class="ex-head">Setup — Bounce na Linha de Tendência</div><div class="ex-row"><span class="ex-l">Confirmação</span><span class="ex-v g">Candle de reversão + volume</span></div><div class="ex-row"><span class="ex-l">Entrada</span><span class="ex-v">Abertura do candle seguinte</span></div><div class="ex-row"><span class="ex-l">Stop</span><span class="ex-v r">Abaixo da mínima do candle de sinal</span></div><div class="ex-row"><span class="ex-l">Alvo</span><span class="ex-v g">Resistência oposta do canal</span></div></div>` },
+
+  m2a5: { title:'Padrão Topo Duplo e Fundo Duplo', meta:['Módulo 2','Aula 5','28 min'], body:`<h3>Topo Duplo (M)</h3><p>Formação de reversão de alta para baixa. O preço testa duas vezes a mesma resistência sem conseguir rompê-la. Entre os dois topos forma um "vale" (neckline).</p><div class="hl">🔴 <strong>Sinal de venda confirmado:</strong> Rompimento da neckline com volume elevado<br>📏 <strong>Alvo:</strong> Projeção da distância entre topo e neckline para baixo</div><div class="ex-table"><div class="ex-head">Exemplo — Topo Duplo PETR4</div><div class="ex-row"><span class="ex-l">Topo 1 e 2</span><span class="ex-v">R$ 40,80</span></div><div class="ex-row"><span class="ex-l">Neckline</span><span class="ex-v">R$ 38,50</span></div><div class="ex-row"><span class="ex-l">Distância</span><span class="ex-v r">R$ 2,30</span></div><div class="ex-row"><span class="ex-l">Alvo pós-rompimento</span><span class="ex-v r">R$ 36,20 (−R$ 2,30)</span></div></div><h3>Fundo Duplo (W)</h3><p>Espelho do topo duplo — formação de reversão de baixa para alta. O preço testa duas vezes o mesmo suporte sem conseguir rompê-lo. Confirmação: rompimento da neckline com volume.</p><div class="hl">🟢 <strong>Sinal de compra:</strong> Fechamento acima da neckline com volume<br>💡 Muito comum em fundos de mercado após correções fortes</div><div class="warn">⚠️ Espere sempre a confirmação (rompimento da neckline) antes de entrar. Entrar antes é especulação — traders profissionais esperam o rompimento confirmado.</div>` },
+
+  m2a6: { title:'Cabeça e Ombros', meta:['Módulo 2','Aula 6','25 min'], body:`<h3>O Padrão Mais Famoso da Análise Técnica</h3><p>Formação de reversão composta por três topos: dois ombros laterais e uma cabeça central mais alta. A linha que conecta os fundos entre os ombros é chamada de <strong>neckline</strong>.</p><div class="ex-table"><div class="ex-head">Estrutura do Cabeça e Ombros</div><div class="ex-row"><span class="ex-l">Ombro Esquerdo</span><span class="ex-v">Topo + recuo</span></div><div class="ex-row"><span class="ex-l">Cabeça</span><span class="ex-v r">Topo mais alto de todos</span></div><div class="ex-row"><span class="ex-l">Ombro Direito</span><span class="ex-v">Topo menor que a cabeça</span></div><div class="ex-row"><span class="ex-l">Neckline</span><span class="ex-v">Suporte — gatilho de entrada</span></div></div><div class="hl">🎯 <strong>Operação:</strong><br>• Venda no rompimento da neckline com volume<br>• Stop acima do ombro direito<br>• Alvo: distância Cabeça→Neckline projetada para baixo</div><h3>Cabeça e Ombros Invertido</h3><p>Padrão de reversão de baixa para alta — exatamente o espelho do C&O clássico. Muito confiável em fundos de mercado. Sinal de compra no rompimento da neckline para cima.</p><div class="info">📊 O C&O é um dos padrões com maior taxa de acerto histórica — estudos mostram confiabilidade de 60–70%. Mas sempre combine com volume para confirmar.</div>` },
+
+  m2a7: { title:'Triângulos — Ascendente, Descendente e Simétrico', meta:['Módulo 2','Aula 7','26 min'], body:`<h3>Triângulo Ascendente</h3><p>Resistência horizontal plana + fundos crescentes. Compressão de preço com viés comprador. Geralmente <strong>rompe para cima</strong>. Comum em tendências de alta antes de aceleração.</p><div class="hl">📈 <strong>Operação:</strong> Compra no rompimento da resistência plana com volume ≥150% da média</div><h3>Triângulo Descendente</h3><p>Suporte horizontal plano + topos decrescentes. Viés vendedor. Geralmente rompe para baixo. Sinal de fraqueza compradora progressiva.</p><div class="warn">📉 Operação: Venda no rompimento do suporte plano com volume elevado</div><h3>Triângulo Simétrico</h3><p>Topos decrescentes + fundos crescentes. Compressão neutra — o mercado está "se decidindo". O rompimento pode ir para qualquer lado. <strong>Opere o rompimento, não a expectativa.</strong></p><div class="ex-table"><div class="ex-head">Regra de Alvo para Triângulos</div><div class="ex-row"><span class="ex-l">Medir</span><span class="ex-v">Altura máxima do triângulo</span></div><div class="ex-row"><span class="ex-l">Projetar</span><span class="ex-v">A partir do ponto de rompimento</span></div><div class="ex-row"><span class="ex-l">Alvo mínimo</span><span class="ex-v g">100% da altura projetada</span></div></div><div class="warn">⚠️ Cuidado com "fakeouts" — rompimentos falsos antes do movimento real. Espere o fechamento do candle acima/abaixo antes de entrar.</div>` },
+
+  m2a8: { title:'Bandeiras e Flâmulas', meta:['Módulo 2','Aula 8','20 min'], body:`<h3>O que são Padrões de Continuação</h3><p>Ao contrário dos padrões de reversão, bandeiras e flâmulas indicam que a tendência atual vai <strong>continuar após uma breve pausa</strong>. São os padrões favoritos de day traders em tendências fortes.</p><h3>Bandeira (Flag)</h3><p>Canal curto de consolidação (2–5 candles) <strong>inclinado contra a tendência principal</strong>, precedido por um movimento forte (o "mastro"). Em tendência de alta, a bandeira é um canal levemente descendente.</p><div class="hl">✅ <strong>Setup perfeito:</strong><br>1. Forte alta (mastro) com volume alto<br>2. Consolidação lateral/descendente com volume baixo (a bandeira)<br>3. Rompimento para cima com volume explosivo<br>4. Alvo: tamanho do mastro projetado do rompimento</div><h3>Flâmula (Pennant)</h3><p>Similar à bandeira, mas a consolidação forma um triângulo simétrico pequeno ao invés de um canal paralelo. Mesma lógica operacional.</p><div class="info">💡 Bandeiras são muito comuns no WIN logo após abertura do mercado americano (14h30). Um forte rompimento seguido de consolidação breve é oportunidade frequente.</div>` },
+
+  m2a9: { title:'Retração de Fibonacci', meta:['Módulo 2','Aula 9','30 min'], body:`<h3>O que é Fibonacci</h3><p>Sequência matemática descoberta por Leonardo Fibonacci no século XIII. No mercado, os níveis de retração mostram <strong>onde o preço tende a pausar ou reverter</strong> após um movimento direcional.</p><div class="ex-table"><div class="ex-head">Níveis de Fibonacci — Os Mais Importantes</div><div class="ex-row"><span class="ex-l">23,6%</span><span class="ex-v">Retração fraca — tendência muito forte</span></div><div class="ex-row"><span class="ex-l">38,2%</span><span class="ex-v g">Retração moderada — muito usada</span></div><div class="ex-row"><span class="ex-l">50%</span><span class="ex-v g">Nível psicológico — extremamente importante</span></div><div class="ex-row"><span class="ex-l">61,8%</span><span class="ex-v g">Golden Ratio — o mais respeitado</span></div><div class="ex-row"><span class="ex-l">78,6%</span><span class="ex-v r">Retração profunda — tendência enfraquecendo</span></div></div><h3>Como Usar no Day Trade</h3><div class="hl">1. Identifique um movimento direcional claro (A→B)<br>2. Trace o Fibonacci do fundo ao topo (alta) ou topo ao fundo (baixa)<br>3. Aguarde o preço recuar para 38,2%, 50% ou 61,8%<br>4. Confirme com candle de reversão no nível<br>5. Entre na direção da tendência original</div><div class="warn">⚠️ Fibonacci não é mágica. É mais eficaz quando o nível coincide com suporte/resistência, VWAP ou EMA — "confluência de fatores" aumenta a probabilidade do trade.</div>` },
+
+  m2a10: { title:'Zonas de Oferta e Demanda (Supply & Demand)', meta:['Módulo 2','Aula 10','32 min'], body:`<h3>Supply & Demand — A Origem do Preço</h3><p>Zonas de oferta (supply) e demanda (demand) são regiões no gráfico onde um <strong>desequilíbrio forte entre compradores e vendedores</strong> causou um movimento rápido e direcional. Quando o preço retorna a essas zonas, tende a reagir novamente.</p><h3>Zona de Demanda (Compra)</h3><p>Região onde houve excesso de compradores — o preço saiu rapidamente para cima. Quando o preço retorna, compradores que "perderam" o movimento tendem a comprar novamente.</p><div class="hl">🟢 Identifique: Base antes de uma forte alta<br>✅ Entrada: No retorno à zona com candle de reversão<br>🛑 Stop: Abaixo da zona de demanda</div><h3>Zona de Oferta (Venda)</h3><p>Região onde houve excesso de vendedores — o preço caiu rapidamente. No retorno, vendedores que não conseguiram sair tendem a vender novamente.</p><div class="info">💡 Supply & Demand é a evolução do conceito de suporte e resistência — em vez de uma linha, trabalha com <strong>zonas (retângulos)</strong> que capturam todo o range de preço onde o desequilíbrio aconteceu.</div><div class="warn">⚠️ Zonas "frescas" (testadas pela primeira vez) são mais poderosas que zonas já testadas múltiplas vezes.</div>` },
+
+  m2a11: { title:'Múltiplos Timeframes — Análise Top-Down', meta:['Módulo 2','Aula 11','28 min'], body:`<h3>Por que usar múltiplos timeframes?</h3><p>O mesmo ativo pode estar em tendência de alta no diário, lateral no 1h e em queda no 5min. Um trader que olha apenas o 5min opera "cego" sem contexto. A análise top-down resolve isso.</p><h3>A Hierarquia dos Timeframes</h3><div class="ex-table"><div class="ex-head">Sistema de 3 Timeframes para Day Trade</div><div class="ex-row"><span class="ex-l">Diário (contexto)</span><span class="ex-v">Qual é a tendência maior? Alta, baixa ou lateral?</span></div><div class="ex-row"><span class="ex-l">15min (estrutura)</span><span class="ex-v">Onde estão suportes e resistências do dia?</span></div><div class="ex-row"><span class="ex-l">5min (entrada)</span><span class="ex-v">Onde entrar, stop e alvo precisos</span></div></div><div class="hl">💡 <strong>Regra de Ouro:</strong> Só opere na direção da tendência do timeframe maior. Se o diário está em alta, busque compras no 5min — nunca vendas contra a tendência maior.</div><h3>Exemplo Prático WIN</h3><p>Diário: alta → 15min: pullback para EMA21 → 5min: candle martelo na EMA + volume → Entrada COMPRADA. Todos os timeframes alinhados = setup de alta probabilidade.</p><div class="warn">⚠️ "Conflito de timeframes" (15min bearish vs diário bullish) = FIQUE FORA. Só opere quando a direção estiver clara em pelo menos 2 dos 3 timeframes.</div>` },
+
+  m2a12: { title:'Prática — Identificando Padrões no Gráfico Real', meta:['Módulo 2','Aula 12','40 min'], body:`<h3>Checklist do Analista Técnico Profissional</h3><p>Antes de cada sessão, siga este processo sistemático de leitura do gráfico:</p><div class="hl"><strong>Passo 1 — Contexto (Diário):</strong><br>• Qual a tendência predominante? (topos e fundos)<br>• Onde estão os principais S/R diários?<br>• O ativo está em zona de S/D relevante?<br><br><strong>Passo 2 — Estrutura (15min):</strong><br>• Confirma a tendência do diário?<br>• Quais são os níveis de hoje? (abertura, máxima/mínima anteriores)<br>• O VWAP está acima ou abaixo do preço?<br><br><strong>Passo 3 — Entrada (5min):</strong><br>• Há um setup claro? (pullback, ORB, reversão)<br>• Volume confirma o movimento?<br>• Risco/retorno é ≥ 2:1?</div><h3>Erros Comuns de Iniciantes</h3><div class="warn">❌ Enxergar padrões onde não existem (viés de confirmação)<br>❌ Traçar suportes/resistências em todo candle — selecione apenas os relevantes<br>❌ Operar padrões sem confirmação de volume<br>❌ Ignorar o contexto do timeframe maior</div><h3>A Prática Deliberada</h3><p>Separe 30 minutos por dia para revisar gráficos históricos. Identifique padrões, anote onde teria entrado, stop e alvo. Calcule o resultado. Após 100 trades simulados você terá uma base sólida para operar com capital real.</p><div class="info">💡 Use a aba Gráficos desta plataforma para praticar — mude os timeframes, identifique padrões e anote suas observações no diário de trades.</div>` },
+  m5a2: { title:'A Regra dos 2% — Fundamento da Sobrevivência', meta:['Módulo 5','Aula 2','25 min'], body:`<h3>O que é a Regra dos 2%</h3><p>A regra mais fundamental da gestão de risco: <strong>nunca arrisque mais de 2% do seu capital total em uma única operação</strong>. Simples, poderosa e frequentemente ignorada por iniciantes.</p><h3>A Matemática da Sobrevivência</h3><div class="ex-table"><div class="ex-head">Sequência de 10 Losses — Impacto por % de Risco</div><div class="ex-row"><span class="ex-l">Risco 2% por trade</span><span class="ex-v g">Restam 82% do capital</span></div><div class="ex-row"><span class="ex-l">Risco 5% por trade</span><span class="ex-v">Restam 60% do capital</span></div><div class="ex-row"><span class="ex-l">Risco 10% por trade</span><span class="ex-v r">Restam 35% do capital</span></div><div class="ex-row"><span class="ex-l">Risco 20% por trade</span><span class="ex-v r">Restam 11% do capital</span></div></div><h3>Calculando sua Posição</h3><p><strong>Fórmula:</strong> Posição = (Capital × 2%) ÷ Distância do Stop</p><div class="ex-table"><div class="ex-head">Exemplo Prático</div><div class="ex-row"><span class="ex-l">Capital</span><span class="ex-v">R$ 20.000</span></div><div class="ex-row"><span class="ex-l">Risco máximo (2%)</span><span class="ex-v r">R$ 400</span></div><div class="ex-row"><span class="ex-l">Stop por ação (PETR4)</span><span class="ex-v">R$ 0,40</span></div><div class="ex-row"><span class="ex-l">Posição máxima</span><span class="ex-v g">1.000 ações</span></div></div><div class="warn">⚠️ Muitos traders quebram por aumentar o tamanho da posição após ganhos (euforia) ou após perdas (revenge). A regra dos 2% deve ser aplicada em TODA operação, independente do estado emocional.</div>` },
+
+  m7a2: { title:'Mini Índice WIN — Especificações Completas', meta:['Módulo 7','Aula 2','28 min'], body:`<div class="hl"><strong>Especificações técnicas WIN 2025:</strong><br>• Código: WIN + mês + ano (WINM25 = jun/2025)<br>• Preço: pontos do Ibovespa (ex: 130.500)<br>• Valor do ponto: <strong>R$ 0,20</strong><br>• Tamanho: R$ 0,20 × pontos do Ibovespa<br>• Margem inicial: ~R$ 100–150/contrato<br>• Horário: 9h00–18h00 (pós: 18h30)<br>• Vencimento: 3ª quarta-feira dos meses pares<br>• Liquidação: financeira</div><h3>Calculando seu Resultado</h3><p>Ganho = Pontos × R$ 0,20 × N° de contratos</p><div class="ex-table"><div class="ex-head">Exemplos de Resultado — WIN</div><div class="ex-row"><span class="ex-l">100 pts × 1 ctr</span><span class="ex-v g">R$ 20,00</span></div><div class="ex-row"><span class="ex-l">500 pts × 3 ctrs</span><span class="ex-v g">R$ 300,00</span></div><div class="ex-row"><span class="ex-l">1.000 pts × 5 ctrs</span><span class="ex-v g">R$ 1.000,00</span></div><div class="ex-row"><span class="ex-l">200 pts loss × 2 ctrs</span><span class="ex-v r">−R$ 80,00</span></div></div><h3>Estratégias para o WIN</h3><p><strong>Setup ORB:</strong> Aguardar rompimento da máxima dos primeiros 15min com volume.<br><strong>Pullback EMA21:</strong> Recuo à média em tendência de alta → comprar.<br><strong>Bounce no VWAP:</strong> Toca o VWAP com candle de reversão → entrada na direção da tendência.<br><strong>Scalping no tape:</strong> Grandes agressores no T&T → seguir o fluxo.</p><div class="warn">⚠️ Alavancagem: com R$ 500 em margem, você controla uma posição de ~R$ 130.000. Um movimento adverso de 200 pts = −R$ 40. Gestione o risco por número de contratos.</div>` },
+
+  m12a1: { title:'IR no Day Trade — Alíquota e Regras', meta:['Módulo 12','Aula 1','25 min'], body:`<div class="warn">⚠️ <strong>Alíquota: 20% sobre o lucro líquido mensal. Sem isenção, independente do valor.</strong></div><h3>Como Funciona o IRRF</h3><p>A corretora retém automaticamente 1% sobre o lucro diário como IRRF (Imposto de Renda Retido na Fonte). Este valor é creditado na "nota de corretagem" e deve ser descontado do imposto mensal a pagar.</p><h3>Cálculo Mensal</h3><div class="ex-table"><div class="ex-head">Exemplo — Mês de Lucro</div><div class="ex-row"><span class="ex-l">Lucros brutos do mês</span><span class="ex-v g">R$ 5.000</span></div><div class="ex-row"><span class="ex-l">Prejuízos do mês</span><span class="ex-v r">R$ 1.500</span></div><div class="ex-row"><span class="ex-l">Corretagem + emolumentos</span><span class="ex-v r">R$ 200</span></div><div class="ex-row"><span class="ex-l">Lucro líquido</span><span class="ex-v g">R$ 3.300</span></div><div class="ex-row"><span class="ex-l">IR devido (20%)</span><span class="ex-v r">R$ 660</span></div><div class="ex-row"><span class="ex-l">IRRF retido (1%)</span><span class="ex-v r">R$ 33</span></div><div class="ex-row"><span class="ex-l">DARF a pagar</span><span class="ex-v r">R$ 627,00</span></div></div><div class="hl">💡 <strong>DARF código 6015</strong><br>Prazo: último dia útil do mês seguinte<br>Pague via: app do banco, internet banking ou receita.fazenda.gov.br</div>` }
+};
+
+function openLesson(key, e) {
+  if(e) e.stopPropagation(); // prevent module from closing
+  const lesson = lessonContent[key];
+  if(lesson) {
+    document.getElementById('modal-title').textContent = lesson.title;
+    document.getElementById('modal-meta').innerHTML = lesson.meta.map(m => `<span>${m}</span>`).join('');
+    document.getElementById('modal-body').innerHTML = lesson.body;
+  } else {
+    document.getElementById('modal-title').textContent = 'Aula';
+    document.getElementById('modal-meta').innerHTML = '<span>Conteúdo completo</span>';
+    document.getElementById('modal-body').innerHTML = `<p>O conteúdo completo desta aula inclui explicação teórica detalhada, exemplos práticos no gráfico ao vivo e exercícios aplicados.</p><div class="hl">💡 Use o <strong>Mentor IA</strong> para aprender sobre qualquer tema desta aula com exemplos personalizados e respostas às suas dúvidas específicas.</div><p>Navegue para a aba <strong>Mentor IA</strong> e pergunte sobre o tema desta aula — o Max responderá com profundidade e exemplos práticos.</p>`;
+  }
+  document.getElementById('modal-back').classList.add('open');
+}
+
+function closeModal(e) {
+  if(e && e.target === document.getElementById('modal-back')) {
+    document.getElementById('modal-back').classList.remove('open');
+  }
+}
+function forceClose() {
+  document.getElementById('modal-back').classList.remove('open');
+}
+
+// ============================================================
+// TICKER
+// ============================================================
+let ibov = 130421, win = 130680, usd = 5034;
+setInterval(() => {
+  ibov += (Math.random()-.5)*30;
+  win += (Math.random()-.5)*40;
+  usd += (Math.random()-.5)*2;
+  document.getElementById('t-ibov').textContent = Math.round(ibov).toLocaleString('pt-BR');
+  document.getElementById('t-win').textContent = Math.round(win).toLocaleString('pt-BR');
+  document.getElementById('t-usd').textContent = (usd/1000).toFixed(3);
+  document.getElementById('mkt-ibov').textContent = Math.round(ibov).toLocaleString('pt-BR');
+}, 2500);
+
+// INIT — load default chart when chart page first opens
+window.addEventListener('load', () => {
+  buildTVWidget('BMFBOVESPA:WIN1!', '5');
+  updateAnalysis('WIN', 'up');
+  updateTradeEx('WIN');
+});
+</script>
+</body>
+</html>
